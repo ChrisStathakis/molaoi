@@ -1,0 +1,176 @@
+{% extends 'inventory/welcome_page.html' %}
+
+{% block left_side %}
+<a href='http://127.0.0.1:8000/reports/warehouse/giorgos/' class="ui red button">Καθαρισμός Φίλτρων</a>
+<form method='get' class="ui form">
+  <div class="field">
+    <label>Search oeo</label>
+    {% if skroutz_name %}
+    <input type="text" name="skroutz_name" value='{{ skroutz_name }}' placeholder="Search">
+    {% else %}
+      <input type="text" name="skroutz_name" placeholder="Search">
+    {% endif %}
+    {% if skroutz_id %}
+    <input type="text" name="skroutz_id" value='{{ skroutz_id }}' placeholder="Search">
+    {% else %}
+      <input type="text" name="skroutz_id" placeholder="Κωδικός Προιόντος">
+    {% endif %}
+    {% if cat_name %}
+    <input type="number" value='{{ cat_name }}' name="cat_name" placeholder="Category id">
+    {% else %}
+      <input type="number" name="cat_name" placeholder="Category id">
+    {% endif %}
+  </div>
+  <input class='ui blue button' type='submit'>
+</form>
+<div class="skroutz-widget">
+  <script type="text/javascript" src="//www.skroutz.gr/javascripts/widget-v1.js" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8" >
+    new SkroutzWidget().display_popular({keyphrase:'{{ skroutz_name }}'});
+  </script>
+  <p class="skwidget-footer">powered by <a href="http://www.skroutz.gr" title="Skroutz">Skroutz</a></p>
+</div>
+
+<div class="skroutz-widget">
+  <script type="text/javascript" src="//www.skroutz.gr/javascripts/widget-v1.js" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8" >
+    new SkroutzWidget().display_popular({category_id:{{ cat_name }}, keyphrase:'{{ skroutz_name }}'});
+  </script>
+  <p class="skwidget-footer">powered by <a href="http://www.skroutz.gr" title="Skroutz">Skroutz</a></p>
+</div>
+<div class="skroutz-widget">
+  <script type="text/javascript" src="//www.skroutz.gr/javascripts/widget-v1.js" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8" >
+    new SkroutzWidget().display_sku({id:{{ skroutz_id }}});
+  </script>
+  <p class="skwidget-footer">powered by <a href="http://www.skroutz.gr" title="Skroutz">Skroutz</a></p>
+</div>
+
+{% endblock %}
+
+{% block center %}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js'></script>
+<div class="row">
+
+  <canvas id="myChart" width="1000" height="800"></canvas>
+<script>
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [
+          {% for ele in incomes_order %}
+            '{{ ele.0 }}',
+          {% endfor %}
+          ],
+        datasets: [
+          {
+            label: '# Esoda',
+            data: [
+              {% for ele in incomes_order %}
+                {{ ele.1 }},
+              {% endfor %}
+            ],
+            borderColor: 'green',
+            borderWidth: 1
+        },
+        {
+          label: '# Εσοδα Προηγούμενης Χρήσης',
+          data: [
+            {% for ele in incomes_order_last %}
+              {{ ele.1 }},
+            {% endfor %}
+          ],
+          borderColor: 'red',
+          borderWidth: 1
+      },
+        {
+          label: '# Timologia',
+          data: [
+            {% for ele in outcomes_order %}
+              {{ ele.1 }},
+            {% endfor %}
+          ],
+          borderColor: 'blue',
+          borderWidth: 1
+      },
+      {
+        label: '# Logariasmoi',
+        data: [
+          {% for ele in bills_order %}
+            {{ ele.1 }},
+          {% endfor %}
+        ],
+        borderColor: 'blue',
+        borderWidth: 1
+    },
+    {
+      label: '# misthodosia',
+      data: [
+        {% for ele in payroll_order %}
+          {{ ele.1 }},
+        {% endfor %}
+      ],
+      borderColor: 'yellow',
+      borderWidth: 1
+  },
+    ]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+</script>
+</div>
+<div class="row">
+  <table class='ui selectable table'>
+    <thead>
+      <tr>
+      <th></th>
+      {% for month in mo %}
+      <th>{{ month }}</th>
+    {% endfor %}
+    </tr>
+  </thead>
+    <tbody>
+      <tr>
+        <td class="positive">Έσοδα</td>
+        {% for ele in incomes_order %}
+          <td class="positive">{{ ele.1 }} €
+        {% endfor %}
+      </tr>
+      <tr>
+        <td class="negative">Έσοδα Προηγούμενης Χρονιάς</td>
+        {% for ele in incomes_order_last %}
+          <td class="negative">{{ ele.1 }} €
+        {% endfor %}
+      </tr>
+      <tr>
+        <td>Επιταγες</td>
+        {% for ele in outcomes_order %}
+          <td class="warning">{{ ele.1 }} €
+        {% endfor %}
+      </tr>
+      <tr>
+        <td>Μισθοδοσία</td>
+        {% for ele in payroll_order %}
+          <td class="warning">{{ ele.1 }} €
+        {% endfor %}
+      </tr>
+      <tr>
+        <td>Λογαριασμοί</td>
+        {% for ele in bills_order %}
+          <td class="warning">{{ ele.1 }} €
+        {% endfor %}
+      </tr>
+
+    </tbody>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'PoS/homepage.html' %}
+
+
+
+{% block center %}
+
+    <div class="ui segments">
+        <div style="text-align: center" class="ui blue  header inverted segment">Πληροφορίες</div>
+        <div class="ui horizontal segments">
+            <div class="ui statistic segment">
+                 <div class="value">
+                      <i class=" green calendar outline icon"></i> {{ day }}
+                 </div>
+                <div class="label">
+                      Ημερομηνία
+                </div>
+            </div>
+            <div class="ui tiny statistic segment">
+                 <div class="value">
+                      <i class="  green calendar outline icon"></i> {{ month }}
+                 </div>
+                <div class="label">
+                    Τρέχων Μήνας
+                </div>
+            </div>
+            <div class="ui tiny statistic segment">
+                 <div class="value">
+                      <i class="  green calendar outline icon"></i> {{ year }}
+                 </div>
+                <div class="label">
+                    Τρέχων Χρονιά
+                </div>
+            </div>
+        </div>
+        <div class="ui divider segment"></div>
+        {% if day.status == 'a' %}
+            <div style="width: 100%" class="ui red inverted button segment">
+                <a href="/PoS/admin/deactive-day/">Κλείσιμο Ημέρας</a>
+            </div>
+            {% else %}
+            <div  style="width: 100%" class="ui green inverted button segment">
+                <a href="/PoS/admin/active-day/"> Άνοιγμα νέας ημέρας</a>
+            </div>
+            {% endif  %}
+        <div class="ui divider segment"></div>
+        <div class="ui inverted blue header segment">
+            Τραπέζια
+        </div>
+        <table class="ui blue table segment">
+            <thead>
+                <tr>
+                    <th>Όνομα Τραπεζιού</th>
+                    <th>Κατάσταση</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in tables %}
+                    <tr>
+                        <td>{{ ele.title }}</td>
+                        {% if ele.status == 'a' %}
+                        <td style="background-color: #448012">{{ ele.get_status_display }}</td>
+                        {% elif ele.status == 'b' %}
+                        <td style="background-color: #29a5ff">{{ ele.get_status_display }}</td>
+                        {% else %}
+                        <td style="background-color: #ff814e">{{ ele.get_status_display }}</td>
+                        {% endif%}
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td  class="ui  button"><a href="/admin/PoS/table/">Επεξεργασία Τραπεζιών</a></td>
+                </tr>
+            </tbody>
+
+        </table>
+
+
+       </div>
+    
+
+
+{% endblock %}
+
+{% block right_side %}
+
+    <div class="ui segments">
+        <div class="ui red inverted header segment">Προσοχή κλείσιμο ΜΟΝΟ στις αλλαγές κάθε Μήνα ή Χρονιάς</div>
+        <div class="ui divider segmnent"></div>
+        <div class="ui segments">
+            {% if month.status == 'a' %}
+            <div class="ui red inverted button segment">
+                <a href="/PoS/admin/deactive-month/"> Κλείσιμο Μήνα</a>
+            </div>
+            {% else %}
+            <div class="ui green inverted button segment">
+               <a href="/PoS/admin/active-month/">Άνοιγμα Νέου Μήνα</a>
+            </div>
+            {% endif  %}
+
+            {% if year.status == 'a' %}
+            <div style="margin-left: 30%" class="ui red inverted button segment">
+                 <a href="/PoS/admin/deactive-year/">Κλείσιμο Χρονιάς</a>
+            </div>
+            {% else %}
+            <div style="margin-left: 30%" class="ui green inverted button segment">
+                 <a href="/PoS/admin/active-year/">Άνοιγμα Νέας Χρονιάς</a>
+            </div>
+            {% endif  %}
+        </div>
+
+{% endblock %}

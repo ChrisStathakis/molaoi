@@ -1,0 +1,367 @@
+{% extends 'inventory/homepageNew.html' %}
+
+{% block center %}
+
+        {% if messages %}
+            <div class="ui green message">
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+{% endif %}
+
+        <form>
+        <div style="width: 120%" class="ui segments">
+            <div class="ui segment">
+                <div class="ui left floated main menu">
+                    <div class="header item">
+                        <h2>'Ολα τα Προϊόντα</h2>
+                    </div>
+                    <div class="item">
+                        <form method="get">
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </form>
+                    </div>
+                    <a href="/αποθήκη/προιόντα/δημιουργία/" class="popup icon item" id="my_button" data-content="Προσθήκη Προϊόντος">
+                        <i class="add square green icon"></i>
+                    </a>
+
+                    <div class="item">
+                        <div class="grouped fields">
+                            <label>Ενέργεια</label>
+                            <div class="field">
+                              <div class="ui radio checkbox">
+                                <input type="radio" name="example2" checked="checked">
+                                <label>Eνεργοποίηση/Απενεργοποίηση</label>
+                              </div>
+                            </div>
+                            <div class="field">
+                              <div class="ui radio checkbox">
+                                <input type="radio" name="example2">
+                                <label>Έκπτωση</label>
+                              </div>
+                            </div>
+                            <div class="field">
+                              <div class="ui radio checkbox">
+                                <input type="radio" name="example2">
+                                <label>Αλλαγή Κατηγορίας</label>
+                              </div>
+                            </div>
+                            <div class="field">
+                              <div class="ui radio checkbox">
+                                <input type="radio" name="example2">
+                                <label>Αλλαγή Προμηθευτή</label>
+                              </div>
+                            </div>
+                            <input type="submit" placeholder="Go!" >
+                          </div>
+                    </div>
+                </div>
+            </div>
+
+        <div style="width: 100%;height:500px;  overflow:auto; margin-top: 3%; " class="ui segment">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if products.has_previous %}
+                        <a href="?page={{ products.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                    </span>
+
+                    {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+            <table  class="ui small selectable celled structured table">
+                <thead >
+                    <tr>
+                        <th rowspan="2">Eπεξεργασία</th>
+                        <th rowspan="2">Κωδικός Τιμολογίου</th>
+                        <th rowspan="2">Ονομασία</th>
+                        <th rowspan="2">Προμηθευτής</th>
+                        <th rowspan="2">Κατηγορία</th>
+                        <th rowspan="2">Τελευταία τιμή Τιμολογίου</th>
+                        <th rowspan="2">Τιμή Πώλησης/Χονδρικής</th>
+                        <th rowspan="2">Κατάσταση Site</th>
+                        <th rowspan="2">Κατάσταση Αποθήκης</th>
+                        <th rowspan="2">Απόθεμα</th>
+                        <th rowspan="2">Ημερομηνία Δημιουργίας</th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for ele in products %}
+                        <tr>
+                            <td>
+                                <input style="margin-right: 20%" type="checkbox">
+                                {% if ele.ware_active == 'a' %}
+                                <a  class="popup icon item" data-content='Απενεργοποίηση' href="/αποθήκη/προιόντα/activate/{{ ele.id }}/">
+                                    <i class=" big remove red icon"></i>
+                                </a>
+                                {% else %}
+                                <a  class="popup icon item" data-content='Ενεργοποίηση' href="/αποθήκη/προιόντα/activate/{{ ele.id }}/">
+                                    <i class="big  add green icon"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ ele.description }}</td>
+                            <td>{{ ele.title }} <a style="display: inline;" class="popup icon item" data-content='Επεξεργασία' href="/αποθήκη/προιόντα/επεξεργασία/{{ ele.id }}/">
+                                    <i class=" edit icon"></i>
+                                </a></td>
+                            <td>{{ ele.supplier.title }}</td>
+                            <td class="right aligned">{{ ele.category.title }}</td>
+                            <td>{{ ele.price_with_discount|floatformat:2 }} €</td>
+                            <td>{{ ele.price|floatformat:2 }} €
+                                {% if ele.priceb2b == 0 %}
+                                {% elif ele.priceb2b %}
+                                 /{{ ele.priceb2b|floatformat:2 }} €</td>
+                                {% else %}
+                                {% endif %}
+                            <td>{{ ele.get_status_display}} </td>
+                            <td>{{ ele.get_ware_active_display }}</td>
+                            <td>{{ ele.reserve }}</td>
+                            <td>{{ ele.day_added }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+        </table>
+        </div>
+        <div class="pagination">
+            <span class="step-links">
+                {% if products.has_previous %}
+                    <a href="?page={{ products.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                </span>
+
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        </div>
+
+    </form>
+
+{% endblock %}
+
+{% block right_side %}
+    <div style="margin-left: 30%" class="ui segments">
+        <form class="ui form" method="post">{% csrf_token %}
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if category_name %}
+                        {% for ele in category_name %}
+                            {{ ele.title }},
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε κατηγορία
+                    {% endif %}
+
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in categories %}
+                        {% if ele.title in category_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if vendor_name %}
+                        {% for ele in vendor_name %}
+                            {{ ele.title }},
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Προμηθευτή
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+
+                    {% for ele in vendors %}
+                        {% if ele.title in vendor_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                        Κατάσταση Site
+                </div>
+                <div  class="content">
+                    <div class="field">
+                        {% if site_status_name == 'a' %}
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="site_status" value="a" checked>
+                                <label>Σε απόθεμα</label>
+                            </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="site_status" value="a">
+                                <label>Σε απόθεμα</label>
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                    <div class="field">
+                        {% if site_status_name == 'i' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="i" checked>
+                            <label>Inactive</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="i">
+                            <label>Inactive</label>
+                        </div>
+
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                         {% if site_status_name == 'o' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="o" checked>
+                            <label>Διαθέσιμο με παραγγελία</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="o">
+                            <label>Διαθέσιμο με παραγγελία</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        {% if site_status_name == 'p' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="p" checked>
+                            <label>Προσωρινά μη διαθέσιμο</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="p">
+                            <label>Προσωρινά μη διαθέσιμο</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if ware_status_name %}
+                        {% if ware_status_name == 'a' %}
+                            <p style="background-color: green">Ενεργοποιημένο</p>
+                        {% else %}
+                            <p style="background-color: red">Απενεργοποιημένο</p>
+                        {% endif %}
+                    {% else %}
+                        Κατάσταση Αποθήκης
+                    {% endif %}
+                </div>
+                <div  class="content">
+                <div class="field">
+                    {% if ware_status_name == 'a' %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="a" checked>
+                            <label>Ενεργοποιημένο</label>
+                        </div>
+                    {% else %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="a">
+                            <label>Ενεργοποιημένο</label>
+                        </div>
+
+                    {% endif %}
+                </div>
+                <div class="field">
+                    {% if ware_status_name == 'b' %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="b" checked>
+                            <label>Απενεργοποιημένο</label>
+                        </div>
+                    {% else %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="b">
+                            <label>Απενεργοποιημένο</label>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Χονδρική
+                </div>
+                <div  class="content">
+                    <div class="ui checkbox">
+                        <input  type="checkbox" name="b2b_status" value="a">
+                        <label>Ναι</label>
+                    </div>
+                    <br>
+                     <div class="ui checkbox">
+                        <input  type="checkbox" name="b2b_status" value="n">
+                        <label>Όχι</label>
+                    </div>
+                    <br>
+                </div>
+            </div>
+
+
+        <input  type="submit" class="ui green button" placeholder="Search">
+        </form>
+    </div>
+
+
+{% endblock %}

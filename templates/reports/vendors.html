@@ -1,0 +1,111 @@
+{% extends 'reports/warehouse.html' %}
+
+{% block left_side %}
+
+    <div style="width: 50%" class="ui segments">
+        <div class="ui segment"></div>
+        <div class="ui grid segment ">
+            <div class="ui vertical fluid tabular menu">
+                  <a href="/reports/products/" class="item">
+                    Προιόντα
+                  </a>
+                  <a href="/reports/vendors/" class="active item">
+                    Προμηθευτές
+                  </a>
+                  <a href="/reports/orders/" class="item">
+                    Τιμολόγια
+                  </a>
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block center %}
+    <div style="margin-left: -30%" class="ui segments">
+        <div class="ui horizontal  segments">
+            <div class="ui blue inverted header segment">
+                Προμηθευτές
+            </div>
+            <div class="ui blue inverted segment">
+                <form class="ui form" method="get">
+                    <div class="ui search">
+                        <div class="ui icon input">
+                            <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="ui segment">
+            <table class="ui celled structured table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Προμηθευτής</th>
+                        <th rowspan="2">Υπόλοιπο</th>
+                        <th rowspan="2">Προκαταβολές</th>
+                        <th rowspan="2">ΑΦΜ</th>
+                        <th rowspan="2">ΔΟΥ</th>
+                        <th colspan="2">Τηλεφωνο</th>
+                        <th rowspan="2">FAX</th>
+                        <th rowspan="2">Email</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ele in vendors %}
+                    <tr>
+                        <td><a href="/reports/vendors/{{ ele.id }}">{{ ele.title }}</a> </td>
+                        {% if ele.balance > 0 %}
+                        <td style="background-color: red;">{{ ele.balance|floatformat:2  }} €</td>
+                        {% else %}
+                        <td>{{ ele.balance }} €</td>
+                        {% endif %}
+                        <td>{{ ele.remaining_deposit|floatformat:2 }} €</td>
+                        <td>{{ ele.afm }}</td>
+                        <td>{{ ele.doy.title }}</td>
+                        <td>{{ ele.phone }}</td>
+                        <td>{{ ele.phone1 }}</td>
+                        <td>{{ ele.fax }}</td>
+                        <td>{{ ele.email }}</td>
+
+
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
+
+
+{% block right_side %}
+
+    <div style="width: 50%;margin-left: 30%" class="ui segments">
+        <div class="ui header segment">
+            ΔΟΥ
+        </div>
+        <div class="ui vertical blue inverted menu segment">
+            {% for ele in taxes_city %}
+                <div class="ui inverted blue item ">
+                    <a href="/reports/vendors-doy/{{ ele.id }}">{{ ele.title }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+{% endblock %}

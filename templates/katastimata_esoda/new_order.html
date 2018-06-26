@@ -1,0 +1,71 @@
+{% extends 'katastimata_esoda/homepage.html' %}
+
+
+{% block center %}
+
+    <style>
+        #id_title_month{
+            width: 25%;
+            display: inline;
+        }
+        #id_title_year{
+            width: 30%;
+            display: inline;
+            padding-left: 15%;
+        }
+        #id_title_day{
+            width: 25%;
+            display: inline;
+        }
+        label{
+            display: block;
+            margin-top: 2% ;
+            font-size: larger;
+        }
+        #id_year,#id_month, label[for=id_year],label[for=id_month]{
+            display: none;
+        }
+        #id_topiko_katastima,#id_skala,#id_mymoda,#id_pediko, #id_boom{
+            height: 50px;
+            text-align: center;
+            font-size: 40px;
+            color: green;
+            margin-top: 3%;
+        }
+        label[for=id_topiko_katastima],label[for=id_skala],label[for=id_mymoda],label[for=id_pediko], label[for=id_boom]{
+            color: blue;
+            font-size: 30px;
+        }
+
+
+
+
+
+    </style>
+    <div class="ui segments">
+    <div style ='text-align: center' class="ui blue inverted header segment">Συμπλήρωση Φόρμας</div>
+        <div class="ui segment form">
+            <form style="text-align: center" method="post" enctype="application/x-www-form-urlencoded" action="">{% csrf_token %}
+                <ul>
+                    {{ form }}
+                </ul>
+                <input style="width:100%;height: 100px" type="submit" name="submit" value="Καταχώρηση" class="ui  green submit button" />
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block right_side %}
+    <div class="ui segments">
+        <div style="text-align: center" class="ui blue inverted header segment">{{ day_esodo.month.title }},{{ day_esodo.year.title }}</div>
+    </div>
+
+
+{% endblock %}

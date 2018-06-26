@@ -1,0 +1,274 @@
+{% extends 'reports/products.html' %}
+
+{% block center %}
+
+    <div class="ui segments">
+        <div style="text-align: center;" class="ui header blue segment">Τιμολόγια Αγοράς</div>
+        <div class="ui segment">
+            <table class="ui table">
+                    <thead>
+                        <tr>
+                            <th>Ημερομηνία</th>
+                            <th>Κωδικός Τιμολογίου</th>
+                            <th>Προμηθευτής</th>
+                            <th>Τιμή</th>
+                            <th>Εκπτωση</th>
+                            <th>Φπα</th>
+                            <th>Ποσότητα</th>
+                            <th>Τελική τιμή</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ele in order_item %}
+                        <tr>
+
+                                <td>{{ ele.order.date }}</td>
+                                <td><a href="">{{ ele.order.code }}</a> </td>
+                                <td>{{ ele.order.vendor }}</td>
+                                <td>{{ ele.price|floatformat:2 }}</td>
+                                <td>{{ ele.discount }} %</td>
+                                <td>{{ ele.get_taxes_display }} %</td>
+                                <td>{{ ele.qty|floatformat:1 }}</td>
+                                <td style="color: red;">{{ ele.price_after_taxes|floatformat:2 }} €</td>
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+            </table>
+        </div>
+        <div class="ui divider segment"></div>
+        <div style="text-align: center;" class="ui center header segment">Εισαγωγές - Εξαγωγές Αποθήκης</div>
+        <div class="ui segment">
+            <table class="ui table">
+                    <thead>
+                        <tr>
+                            <th>Ημερομηνία</th>
+                            <th>Σχόλια</th>
+                            <th>Ποσότητα</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ele in change_qty %}
+                        <tr>
+                            <td>{{ ele.order.day_added }}</td>
+                            <td>{{ ele.order.title }} </td>
+                            <td>{{ ele.qty }}</td>
+                    {% endfor %}
+                    </tbody>
+            </table>
+        </div>
+
+    </div>
+    <hr style="margin-top:3%;margin-bottom: 3%;color: red;">
+    <div class="ui segments">
+        <div style="text-align: center" class="ui green inverted header segment">
+            Πωλήσεις
+        </div>
+        <div class="ui segment">
+            <table style="text-align: center;" class="ui table">
+                    <thead>
+                        <tr>
+                            <th>Ημερομηνία</th>
+                            <th>Πώληση</th>
+                            <th>Τιμή</th>
+                            <th>Ποσότητα</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ele in retail %}
+                        {% if ele.size %}
+                            <tr>
+                                <td>{{ ele.order.day_added }}</td>
+                                <td>{{ ele.order.title|truncatechars:15 }}| {{ ele.color.title }}| {{ ele.size.title }} </td>
+                                <td>{{ ele.price|floatformat:2 }} €</td>
+                                <td>{{ ele.qty }}</td>
+                            </tr>
+
+
+                        {% elif ele.color %}
+                            <tr>
+                                <td>{{ ele.order.day_added }}</td>
+                                <td>{{ ele.order.title|truncatechars:15 }}| {{ ele.color.title }} </td>
+                                <td>{{ ele.price|floatformat:2 }} €</td>
+                                <td>{{ ele.qty }}</td>
+                            </tr>
+
+                        {% else %}
+                        <tr>
+                            <td>{{ ele.order.day_added }}</td>
+                            <td>{{ ele.order.title }} </td>
+                            <td>{{ ele.price|floatformat:2 }} €</td>
+                            <td>{{ ele.qty }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block right_side %}
+    <div class="ui segments">
+        <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+
+
+        <div class="ui fluid horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ product.description }}
+                    </div>
+                    <div class="label">
+                        Κωδικός Τιμολογίου
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">{{ product.title }}</div>
+            {% if product.product_id.count > 0 %}
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ product.product_id }}
+                    </div>
+                    <div class="label">
+                        Barcode
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        --
+                    </div>
+                    <div class="label">
+                        Barcode
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="ui divider segment"></div>
+    
+
+        <div style='text-align: center' class="ui header blue segment">Στοιχεία</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ product.category.title}}
+                    </div>
+                    <div class="label">
+                        Κατηγορία
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ product.supplier.title }}
+                    </div>
+                    <div class="label">
+                        Προμηθευτής
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro red icon"></i>{{ product.price_buy }}
+                    </div>
+                    <div class="label">
+                        Τιμή Αγοράς
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ product.ekptosi}} %
+                    </div>
+                    <div class="label">
+                        Ποσοστό Έκπτωσης
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ product.qty_kilo}}
+                    </div>
+                    <div class="label">
+                        Τεμάχια/Κιλά  ανα συσκευασία
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui blue header segment">Στοιχεία Πώλησης</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro icon"></i>{{ product.price_internet }}
+                    </div>
+                    <div class="label">
+                        Τιμή Χονδρικής
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i>{{ product.price}}
+                    </div>
+                    <div class="label">
+                        Τιμή Λιανικής
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ product.reserve}}
+                    </div>
+                    <div class="red inverted label">
+                        Απόθεμα
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui inverted green segment">{{ product.get_status_display}}</div>
+    </div>
+
+    <div class="ui segments">
+        <div class="ui segment">
+            <table class="ui table">
+                <thead>
+                    <tr>
+                        <th>Χρώμα</th>
+                        <th>Μέγεθος - Υπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key,value in color_list.items %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends 'inventory/welcome_page.html' %}
+
+
+
+{% block left_side %}
+  <div class="ui segment">
+     <form class="ui form" method="post">{% csrf_token %}
+
+
+
+            <input  name="date_pick" placeholder="Ημερομηνία" >
+            <input style="width: 100%;margin-top: 3%;" class="ui green inverted button" type="submit">
+        </form>
+    </div>
+
+{{ day_now }}
+
+{% endblock %}
+
+{% block center %}
+
+
+    <div class="ui segments">
+        <div style='text-align:center' class="ui blue inverted headeer segment"> <h1>{{ day.title }}</h1></div>
+
+        <div class="ui segment">
+            {% for ele in orders %}
+
+                <div class="ui fade reveal">
+                    <div style="width: 100%" class='visible content '>
+                        <a style="width: 100%" href="/reports/income/product/{{ ele.id }}/" class="ui massive blue button"></i>{{ ele.title|truncatechars:20 }} 'Εσοδα {{ ele.paid_value }} €</a>
+
+
+                    </div>
+                    <div class="hidden content">
+                        <a style="width: 100%" href="/reports/income/product/{{ ele.id }}/" class="ui massive green button"><i class="share square icon"></i>Αξία Παραγγελίας {{ ele.value }} €, Κόστος Παραγωγής {{ ele.total_cost }} €</a>
+                    </div>
+                </div>
+          {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+{% block right_side %}
+
+    <div class="ui segments">
+        <div style='text-align: center' class="ui inverted blue segment">Περίοδος</div>
+
+        <div class="ui fluid horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ start_month }}
+                    </div>
+                    <div class="label">
+                         Από
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment"></div>
+
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ day_now }}
+                    </div>
+                    <div class="label">
+                        Εώς
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui divider segment"></div>
+
+
+        <div style='text-align: center' class="ui header blue segment">Στοιχεία</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro red icon"></i> {{ total_cost|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Κόστος Παραγγελιών
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro green icon"></i> {{ total_income|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Παραγγελιών
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ profit|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Κέρδος σε Ευρό
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                         {{ profit_in_percent|floatformat:2 }} %
+                    </div>
+                    <div class="label">
+                        Πόσοστο Κέρδους
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ orders_count}}
+                    </div>
+                    <div class="label">
+                        Αριθμός Παραγγελιών
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui blue header segment">Στοιχεία Πώλησης</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro red icon"></i> {{ avg_cost|floatformat:2  }}
+                    </div>
+                    <div style="color:red;" class="label">
+                        Μέσο Κόστος Παραγγελίας
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ avg_income|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Μέσα Έσοδα Παραγγελίας
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+
+                <div class="ui mini green inverted statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ avg_profit|floatformat:2 }}
+                    </div>
+                    <div style="color:darkgray;" class="label">
+                        Μέσο Κέρδος Παραγγελίας
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+{% endblock %}
+
+

@@ -1,0 +1,44 @@
+{% extends 'inventory/tools.html' %}
+
+
+{% block left_side %}
+        <div style="width: 46%" class="ui segments">
+            <div class="ui secondary vertical pointing menu segment">
+                <a href="/αποθήκη/εργαλεία/" class=" item">
+                   Δημιουργία
+                </a>
+                <a href="/αποθήκη/εργαλεία/αλλαγή-ποσότητας/δημιουργία/" class="active item">
+                   Αλλαγή Ποσότητας Αποθήκης
+                </a>
+                <a class="item">
+                   Friends
+                </a>
+            </div>
+        </div>
+{% endblock %}
+
+
+{% block center %}
+    <div class="ui segments">
+    <div class="ui segment blue inverted header">Αλλαγή Ποσότητας</div>
+    </div>
+     <div class="ui form segment">
+
+        <form class="ui form" method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+            {{ form }}
+            <input style="height:200px;width:100%;margin-top: 20%" type="submit" name="submit" class="ui green button" value="Επιβεβαίωση"/>
+        </form>
+    </div>
+
+
+
+
+{% endblock %}
+
+
+
+
+
+{% block right_side %}
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "reports/misthodosia_main_page.html" %}
+
+
+
+
+
+
+
+{% block center %}
+
+<div class="ui segments">
+        <div style="text-align: center;" class="ui blue inverted segment">Υπάλληλοι</div>
+        <div class="ui segment">
+        <table class="ui table segment">
+            <thead>
+                <tr>
+                    <th>Ονομασία</th>
+                    <th>Τηλέφωνο</th>
+                    <th>Κινητό</th>
+                    <th>Απασχόληση</th>
+                    <th>Υπόλοιπο</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ele in persons %}
+                    <tr>
+                        <td>{{ ele.title }}</td>
+                        <td>{{ ele.phone }}</td>
+                        <td>{{ ele.phone1 }}</td>
+                        <td>{{ ele.occupation.title }}</td>
+                        <td>{{ ele.salary_paid|floatformat:2  }} €</td>
+                       
+                   
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block right_side %}
+
+{% endblock %}

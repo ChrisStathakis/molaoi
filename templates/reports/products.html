@@ -1,0 +1,603 @@
+{% extends 'reports/warehouse.html' %}
+
+{% block left_side %}
+
+    <div style="width: 70%" class="ui segments">
+        <div class="ui segment"></div>
+        <div class="ui grid segment ">
+            <div class="ui vertical fluid tabular menu">
+                  <a href="/reports/products/" class="active item">
+                    Προιόντα
+                  </a>
+                  <a href="/reports/vendors/" class=" item">
+                    Προμηθευτές
+                  </a>
+                  <a href="/reports/orders/" class="item">
+                    Τιμολόγια
+                  </a>
+
+            </div>
+        </div>
+        <div class="ui divider segment"></div>
+        {% if category_title %}
+            <div class="ui segment">
+                <div class="ui items">
+                  <div class="item">
+                      <div class="content">
+                      <div class="header">{{ category_title.title }}</div>
+                      <div class="meta">
+                        <span class="price">Μέσο Κόστος: {{ products_avg_price_buy|floatformat:2 }} €</span>
+                        <span class="stay">,Συνολικό Προϊόντα:  {{ product_total }}</span>
+                        <span class="stay">Συνολικό Απόθεμα:  {{ products_qty }}</span>
+                      </div>
+                      <div class="description">
+                        <p>Συνολικό Κόστος Αποθέματος</p>
+                          {{ products_total_cost|floatformat:2 }} €
+                      </div>
+                      <div class="description">
+                        <p>Συνολικό Κόστος Aνά Προμηθευτή</p>
+                          <table class="ui normal table">
+                              <thead>
+                                <tr>
+                                    <th>Προμηθευτής</th>
+                                    <th>Απόθεμα</th>
+                                    <th>Κόστος σε € </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                    {% for key,value in vendor_sum.items %}
+                                        <tr>
+                                        <td>{{ key }}</td>
+                                            {% for ele in value %}
+                                                <td>{{ ele|floatformat:2 }}</td>
+                                            {% endfor %}
+
+                                        </tr>
+                                    {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+
+{% endblock %}
+
+
+
+{% block center %}
+
+    {% if color_name  %}
+        <div style="width: 140%;margin-left: -15%" class="ui segments">
+        <div class="ui horizontal segments">
+            <div style="text-align: center" class="ui blue inverted header segment">
+                Προιόντα
+            </div>
+            <div class="ui inverted blue segment">
+                <form method="get">
+                    <div class="ui search">
+                            <div class="ui icon input">
+                                <input style="width: 300px" class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                                <i class="search icon"></i>
+                            </div>
+                            <div class="results"></div>
+                        </div>
+
+                </form>
+            </div>
+
+        </div>
+        <div  style="width: 100%;height:500px;  overflow:scroll;" class="ui segment">
+            <table  class="ui small celled structured table">
+                <thead >
+                    <tr>
+                        <th rowspan="2">Κωδικός</th>
+                        <th rowspan="2">Προιόν</th>
+                        <th rowspan="2">Προμηθευτής</th>
+                        <th rowspan="2">Κατηγορία</th>
+                        <th colspan="3">Χαρακτηριστικά</th>
+                        <th rowspan="2">Τιμή</th>
+                        <th rowspan="2">Υπόλοιπο</th>
+                    </tr>
+                    <tr>
+                        <th>Χρώμα</th>
+                        <th colspan="2">Μεγέθη</th>
+
+                    </tr>
+                </thead>
+                <tbody >
+                    {% for ele in color_products %}
+                        <tr>
+                            <td >{{ ele.product.description }}</td>
+                            <td><a href="/reports/products/{{ ele.product.id }}">{{ ele.product.title }}</a></td>
+                            <td><a href="/reports/vendors/{{ ele.product.supplier.id }}">{{ ele.product.supplier.title }}</a></td>
+                            <td><a href='/reports/products/cat/{{ ele.product.category.id }}/'>{{ ele.product.category.title }}</a></td>
+                            <td>
+                                <div class="ui label">
+                                    {{ ele.title }}
+                                    <div class="detail">{{ele.qty }}</div>
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                {% for size_p in ele.sizeattribute_set.all %}
+                                    <div class="ui label">
+                                        {{ size_p.title }}
+                                      <div class="detail">{{ size_p.qty }}</div>
+                                    </div>
+
+                                {% endfor %}
+                            </td>
+
+                            <td>{{ ele.product.price|floatformat:2 }} €</td>
+                            {% if ele.show_warehouse_remain <= 0 %}
+                              <td style="background-color: indianred">{{ ele.product.show_warehouse_remain|floatformat:2 }} €</td>
+                            {% else %}
+                              <td class="green">{{ ele.product.show_warehouse_remain|floatformat:2 }} </td>
+                            {% endif %}
+
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="  pagination ">
+            <span class="step-links">
+                {% if products.has_previous %}
+                    <a  href="?page={{ products.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                </span>
+
+                {% if products.has_next %}
+                    <a  href="?page={{ products.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        </div>
+    </div>
+
+
+    {% elif size_name %}
+        <div style="width: 140%;margin-left: -15%" class="ui segments">
+        <div class="ui horizontal segments">
+            <div style="text-align: center" class="ui blue inverted header segment">
+                Προιόντα
+            </div>
+            <div class="ui inverted blue segment">
+                <form method="get">
+                    <div class="ui search">
+                            <div class="ui icon input">
+                                <input style="width: 300px" class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                                <i class="search icon"></i>
+                            </div>
+                            <div class="results"></div>
+                        </div>
+
+                </form>
+            </div>
+
+        </div>
+        <div  style="width: 100%;height:500px;  overflow:scroll;" class="ui segment">
+            <table  class="ui small celled structured table">
+                <thead >
+                    <tr>
+                        <th rowspan="2">Κωδικός</th>
+                        <th rowspan="2">Προιόν</th>
+                        <th rowspan="2">Προμηθευτής</th>
+                        <th rowspan="2">Κατηγορία</th>
+                        <th colspan="3">Χαρακτηριστικά</th>
+                        <th rowspan="2">'Εκτπωση</th>
+                        <th rowspan="2">Τιμή Πώλησης</th>
+                    </tr>
+                    <tr>
+                        <th>Χρώμα</th>
+                        <th colspan="2">Μεγέθη- Yπόλοιπο</th>
+
+                    </tr>
+                </thead>
+                <tbody >
+                    {% for ele in size_products %}
+                        <tr>
+                            <td>{{ ele.color.product.description }}</td>
+                            <td><a href="/reports/products/{{ ele.id }}">{{ ele.color.product.title }}</a></td>
+                            <td><a href="/reports/vendors/{{ ele.supplier.id }}">{{ ele.color.product.supplier.title }}</a></td>
+                            <td><a href='/reports/products/cat/{{ ele.color.product.category.id }}/'>{{ ele.color.product.category.title }}</a></td>
+                            <td>{{ ele.color.title}} </td>
+                            <td colspan="2" class="positive">
+                                <div class="ui label">
+                                    {{ ele.title }}
+                                    <div class="detail">{{ele.qty }}</div>
+                                </div>
+                            </td>
+
+
+                            <td>incoming</td>
+
+                            <td>{{ ele.color.product.price|floatformat:2 }} €</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="  pagination ">
+            <span class="step-links">
+                {% if products.has_previous %}
+                    <a  href="?page={{ products.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                </span>
+
+                {% if products.has_next %}
+                    <a  href="?page={{ products.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        </div>
+    </div>
+
+    {% else %}
+
+    <div style="width: 140%;margin-left: -15%" class="ui segments">
+        <div class="ui horizontal segments">
+            <div style="text-align: center" class="ui blue inverted header segment">
+                Προιόντα
+            </div>
+            <div class="ui inverted blue segment">
+                <form method="get">
+                    <div class="ui search">
+                            <div class="ui icon input">
+                                <input style="width: 300px" class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                                <i class="search icon"></i>
+                            </div>
+                            <div class="results"></div>
+                        </div>
+
+                </form>
+            </div>
+
+        </div>
+        <div  style="width: 100%;height:500px;  overflow:scroll;" class="ui segment">
+            <table  class="ui small celled structured table">
+                <thead >
+                    <tr>
+                        <th rowspan="2">Κωδικός</th>
+                        <th rowspan="2">Προιόν</th>
+                        <th rowspan="2">Προμηθευτής</th>
+                        <th rowspan="2">Κατηγορία</th>
+                        <th colspan="3">Τιμή</th>
+                        <th rowspan="2">'Εκτπωση</th>
+                        <th rowspan="2">Υπόλοιπο</th>
+                    </tr>
+                    <tr>
+                        <th>Τιμή Αγοράς</th>
+                        <th>Τιμή Χονδρικής</th>
+                        <th>Τιμή Λιανικής</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {% for ele in products %}
+                        <tr>
+                            <td>{{ ele.description }}</td>
+                            <td><a href="/reports/products/{{ ele.id }}">{{ ele.title }}</a></td>
+                            <td><a href="/reports/vendors/{{ ele.supplier.id }}">{{ ele.supplier.title }}</a></td>
+                            <td><a href='/reports/products/cat/{{ ele.category.id }}/'>{{ ele.category.title }}</a></td>
+                            <td>{{ ele.price_buy }} €</td>
+                            <td>{{ ele.price_internet }} €</td>
+                            <td class="positive">{{ ele.price }} €</td>
+                            <td>incoming</td>
+                            {% if ele.show_warehouse_remain <= 0 %}
+                              <td style="background-color: indianred">{{ ele.show_warehouse_remain|floatformat:2 }}</td>
+                            {% else %}
+                              <td class="green">{{ ele.show_warehouse_remain|floatformat:2 }} </td>
+                            {% endif %}
+
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="  pagination ">
+            <span class="step-links">
+                {% if products.has_previous %}
+                    <a  href="?page={{ products.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                </span>
+
+                {% if products.has_next %}
+                    <a  href="?page={{ products.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block right_side %}
+    <div style="width: 50%;margin-left: 40%" class="ui segments">
+        <form class="ui form" method="post">{% csrf_token %}
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if category_name %}
+                        {% for ele in category_name %}
+                            <a class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε κατηγορία
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in categories %}
+                        {% if ele.title in category_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="category" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if vendor_name %}
+                        {% for ele in vendor_name %}
+                            <a style="margin-top: 1%" class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Προμηθευτή
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in vendors %}
+                        {% if ele.title in vendor_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="vendor" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if color_name %}
+                        {% for ele in color_name %}
+                            <a style="margin-top: 1%" class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Χρώμα
+                    {% endif %}
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in colors %}
+                        {% if ele.title in color_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="color_name" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="color_name" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if size_name %}
+                        {% for ele in size_name %}
+                            <a style="margin-top: 1%" class="ui blue label">
+                                {{ ele.title }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Επέλεξε Μέγεθος
+                    {% endif %}
+
+                </div>
+                <div style='height: 300px;overflow: scroll' class="content">
+                    {% for ele in sizes %}
+                        {% if ele.title in size_name %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="size_name" value="{{ ele.title }}" checked>
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% else %}
+                            <div class="ui checkbox">
+                                <input  type="checkbox" name="size_name" value="{{ ele.title }}">
+                                <label>{{ ele.title }}</label>
+                            </div>
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                        Κατάσταση Site
+                </div>
+                <div  class="content">
+                    <div class="field">
+                        {% if site_status_name == 'a' %}
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="site_status" value="a" checked>
+                                <label>Σε απόθεμα</label>
+                            </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="site_status" value="a">
+                                <label>Σε απόθεμα</label>
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                    <div class="field">
+                        {% if site_status_name == 'i' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="i" checked>
+                            <label>Inactive</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="i">
+                            <label>Inactive</label>
+                        </div>
+
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                         {% if site_status_name == 'o' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="o" checked>
+                            <label>Διαθέσιμο με παραγγελία</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="o">
+                            <label>Διαθέσιμο με παραγγελία</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="field">
+                        {% if site_status_name == 'p' %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="p" checked>
+                            <label>Προσωρινά μη διαθέσιμο</label>
+                        </div>
+                        {% else %}
+                            <div class="ui radio checkbox">
+                            <input type="radio" name="site_status" value="p">
+                            <label>Προσωρινά μη διαθέσιμο</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    {% if ware_status_name %}
+                        {% if ware_status_name == 'a' %}
+                            <p style="background-color: green">Ενεργοποιημένο</p>
+                        {% else %}
+                            <p style="background-color: red">Απενεργοποιημένο</p>
+                        {% endif %}
+                    {% else %}
+                        Κατάσταση Αποθήκης
+                    {% endif %}
+                </div>
+                <div  class="content">
+                <div class="field">
+                    {% if ware_status_name == 'a' %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="a" checked>
+                            <label>Ενεργοποιημένο</label>
+                        </div>
+                    {% else %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="a">
+                            <label>Ενεργοποιημένο</label>
+                        </div>
+
+                    {% endif %}
+                </div>
+                <div class="field">
+                    {% if ware_status_name == 'b' %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="b" checked>
+                            <label>Απενεργοποιημένο</label>
+                        </div>
+                    {% else %}
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="ware_status" value="b">
+                            <label>Απενεργοποιημένο</label>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+                </div>
+            </div>
+
+
+            <div class="ui accordion segment">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Χονδρική
+                </div>
+                <div  class="content">
+                    <div class="ui checkbox">
+                        <input  type="checkbox" name="b2b_status" value="a">
+                        <label>Ναι</label>
+                    </div>
+                    <br>
+                     <div class="ui checkbox">
+                        <input  type="checkbox" name="b2b_status" value="n">
+                        <label>Όχι</label>
+                    </div>
+                    <br>
+                </div>
+            </div>
+
+
+        <input style="width: 100%" type="submit" class="ui green button" placeholder="Search">
+        </form>
+    </div>
+
+
+{% endblock %}

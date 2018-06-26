@@ -1,0 +1,194 @@
+{% extends 'PoS/homepage.html' %}
+
+
+{% block center %}
+
+    {% if messages %}
+    <div class="ui green message">
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div style="width: 85%" class="ui segments">
+        <div class="ui inverted blue segment">
+            <h2 style="text-align: center">{{ order.title }}</h2>
+        </div>
+        <div class="ui horizontal segments">
+            <div class="ui header segment">Προιόντα</div>
+            <div class="ui segment">
+                <form method="get">
+                    <div class="ui search">
+                        <div class="ui icon input">
+                            <input class="prompt" name="search_products" type="text" placeholder="Αναζήτηση Προϊόντος..">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+         <div class="ui segment">
+                {% for ele in products %}
+                    {% if ele.color == 'a' %}
+                        <a style="width: 30%;height:200px;text-align: center" href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}/add/" class="ui huge  button segment">
+                           <section style="color: #ffa980">{{ ele.title }}
+                            <br>Τιμή: {{ ele.price }} €</section><br>
+                            Κωδικός Barcode:{{ ele.product_id }}
+                            <br>
+                        Συνέχεια.....</a>
+
+
+                    {% else %}
+                        <a style="width: 30%;height:200px;text-align: center" href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}/add/" class="ui huge  button segment">
+                            <section style="color: #ffa980">{{ ele.title }}
+                            <br>Τιμή: {{ ele.price }} €</section><br>
+                            Κωδικός Barcode:{{ ele.product_id }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        <div class="ui red divider segment"></div>
+        <div class="ui segments">
+            <div class="ui segment">
+                <form method="get">
+                    <div class="ui search">
+                        <div class="ui icon input">
+                            <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση... Κατηγορίας...">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="ui segment">
+                {% for ele in categories %}
+
+                <a style="width: 30%;height:100px;text-align: center" href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}" class="ui huge green button segment">{{ ele.title }}</a>
+                {% endfor %}
+            </div>
+
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+{% block right_side %}
+    <div  style="margin-left: -25%" class="ui segments">
+        <div style="text-align: center" class="ui inverted blue header segment">
+            Πληροφορίες Παραγγελίας
+        </div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+               <h3>{{ order.title|truncatechars:20 }}</h3>
+            </div>
+            <div class="ui segment"></div>
+            <div class="ui segment">
+                <h3 style="color: deepskyblue"> Αρχική Αξία  {{ order.value|floatformat:2 }} €</h3>
+            </div>
+        </div>
+        <div class="ui segment">
+
+            <table class="ui table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Κωδικός</th>
+                        <th>Barcode</th>
+                        <th>Προίον</th>
+                        <th>Ποσότητα-Τιμή</th>
+                        <th></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ele in order_items %}
+                    {% if ele.color %}
+                        <tr>
+                            <td><a style="width: 100%" href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}/edit/" class="ui blue button"> <i class="edit icon"></i></a></td>
+                            <td>{{ ele.title.description }}</td>
+                            <td>{{ ele.title.product_id }}</td>
+                            <td>{{ ele.title }}, <div style="display: inline" class="ui  label">{{ ele.color.title }},{{ ele.size.title }}</td>
+                            <td>{{ ele.qty }} - {{ ele.total_price|floatformat:2 }}</td>
+                            <td> <a href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}/delete/" class="ui red button"> <i class="trash bin  icon"></i></a> </td>
+                        </tr>
+                    {% else %}
+                    <tr>
+                        <td><a style="width: 100%" href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}/edit/" class="ui blue button"> <i class="edit icon"></i></a></td>
+                        <td>{{ ele.title.description }}</td>
+                        <td>{{ ele.title.product_id }}</td>
+                        <td>{{ ele.title }}</td>
+                        <td>{{ ele.qty }} - {{ ele.total_price|floatformat:2 }}</td>
+                        <td> <a href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}/delete/" class="ui red button"> <i class="trash bin  icon"></i></a> </td>
+                    </tr>
+                    {% endif %}
+
+                {% endfor %}
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Αποπληρωμένο Ποσό, {{ order.paid_value|floatformat:2 }}</td>
+                    <td style="color: #00719b;font-size: large">Υπόλοιπο</td>
+                    <td style="color: #00719b;font-size: large"><span style="color: red; margin-left: 5%">{{ order.remaining_value }} €</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="ui segment"></div>
+        <div class="ui segment">
+             <a style="width: 100%;text-align: center;height:100px" href="/PoS/lianiki/order/{{ order.id }}/pay/" class="ui green button">
+                {% if order.remaining_value > 0 %}
+                        <i style="padding-right:20%;color: red" class="ui big red payment icon">Πληρωμή</i>
+                {%  else %}
+                        <i style="padding-right:20%;text-align:center;font-size:40px;" class="ui big  payment icon">Πληρωμή</i>
+                {% endif  %}
+            </a>
+
+        </div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                 <a href="" class="ui green button"><i class="options icon"></i> </a>
+            </div>
+            <div class="ui segment">
+                <a href="" class="ui green button"><i class="checkmark icon"></i> </a>
+            </div>
+
+
+        </div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                 <h3>Απόδειξη</h3>
+            </div>
+            <div class="ui segment">
+                <a href="" class="ui green button"><i class="toggle on icon"></i> Ενεργοποίηση</a>
+            </div>
+            <div class="ui segment">
+                 <a  href="/PoS/εκτύπωση/" class="ui blue button"><i style="width: 100%" class=" print icon">Εκτύπωση Παραγγελίας.</i> </a>
+            </div>
+
+        </div>
+        <div class="ui divider segment"></div>
+        <div class="ui segment">
+
+
+            </div>
+        <div style="margin-bottom: 15%" class="ui divider segment"></div>
+
+        <div class="ui segment">
+            <a style="width: 100%;height:200px;font-size:40px;" href="/PoS/lianiki/order/{{ order.id }}/closed/" class="ui big  blue button">Αποθήκευση</a>
+        </div>
+
+    </div>
+
+
+{% endblock %}

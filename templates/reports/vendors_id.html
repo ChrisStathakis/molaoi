@@ -1,0 +1,251 @@
+{% extends 'reports/vendors.html' %}
+
+
+
+
+{% block left_side %}
+     <div style="width: 50%" class="ui segments">
+        <div class="ui segment"></div>
+        <div class="ui grid segment ">
+            <div class="ui vertical fluid tabular menu">
+                  <a href="/reports/products/" class="item">
+                    Προιόντα
+                  </a>
+                  <a href="/reports/vendors/" class="active item">
+                    Προμηθευτές
+                  </a>
+                  <a href="/reports/orders/" class="item">
+                    Τιμολόγια
+                  </a>
+
+            </div>
+        </div>
+    </div>
+
+<div class="ui segments">
+        <div style="text-align: center;" class="ui blue inverted header segment"> Προιόντα</div>
+        <div class="ui table segment">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Κωδικός </th>
+                        <th>Ονομασία</th>
+                        <th>Απόθεμα</th>
+                        <th>Τιμή Αγοράς</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ele in products %}
+                        <tr>
+                            {% if ele.status == 'a' %}
+                            <td style="background-color: green;">{{ ele.description }}</td>
+                            {% else %}
+                            <td style="background-color: green;">{{ ele.description }}</td>
+                            {% endif %}
+                            <td><a href="/reports/products/{{ ele.id }}">{{ ele.title }}</a> </td>
+                            <td>{{ ele.reserve|floatformat:1 }}</td>
+                            <td>{{ ele.price_buy }} €</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+{% endblock %}
+
+
+
+
+{% block center %}
+    <div class="ui segments">
+        <div style="text-align: center;" class="ui blue inverted header segment"> Τιμολόγια</div>
+        <div class="ui  segment">
+            <table class="ui table segment">
+                <thead>
+                    <tr>
+                        <th>Ημερομηνία</th>
+                        <th>Αρ Παραστατικου</th>
+                        <th>Συνολικό Ποσό</th>
+                        <th>ΦΠΑ</th>
+                        <th>Κατάσταση</th>
+						<th>Yπόλοιπο</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ele in order %}
+                        <tr>
+                            <td>{{ ele.date }}</td>
+                            <td><a href="/reports/orders/{{ ele.id }}">{{ ele.code }}</a></td>
+                            <td>{{ ele.total_price|floatformat:2  }} €</td>
+
+                            <td>{{ ele.total_taxes|floatformat:2  }} €</td>
+							{% if ele.status == 'a' %}
+								<td style="background-color:green;">{{ ele.get_status_display }}</td>
+							{% else %}
+								<td style="background-color:red;">{{ ele.get_status_display }}</td>
+								<td>{{ ele.ipoloipo_xreostiko|floatformat:2  }} € </td>
+							{% endif %}		
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+
+{% block right_side %}
+    <div class="ui segments">
+        <div style='text-align: center' class="ui inverted blue segment">Πληροφορίες</div>
+
+
+        <div class="ui fluid horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ vendor.title }}
+                    </div>
+                    <div class="label">
+                        Ονομασία
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">{{ product.title }}</div>
+            {% if vendor.doy.title.count > 0 %}
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ vendor.doy.title }},{{ vendor.afm }}
+                    </div>
+                    <div class="label">
+                        ΔοΥ
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ vendor.afm }}
+                    </div>
+                    <div class="label">
+                        ΔοΥ  -----
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="ui divider segment"></div>
+
+
+        <div style='text-align: center' class="ui header blue segment">Στοιχεία</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ vendor.phone }} , {{ vendor.phone1 }}
+                    </div>
+                    <div class="label">
+                        Τηλέφωνο
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ vendor.phone1 }}
+                    </div>
+                    <div class="label">
+                        Κινητό
+                    </div>
+                </div>
+            </div>
+            <div class="ui mini segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ vendor.fax}}
+                    </div>
+                    <div class="label">
+                        Fax
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui mini segment">
+                <div class="ui mini grey statistic">
+                    <div style="font-size: 15px" class="value">
+                        {{ vendor.email }}
+                    </div>
+                    <div class="label">
+                        Email
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui mini segment">
+                <div class="ui mini grey statistic">
+                    <div style="font-size: 15px" class=" value">
+                        {{ vendor.site }}
+                    </div>
+                    <div class="label">
+                        Site
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui blue header segment">Οικονομικά στοιχεία</div>
+        <div style='text-align: center' class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro red icon"></i>   {{ vendor.balance|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Υπόλοιπο
+                    </div>
+                </div>
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i>   {{ vendor.remaining_deposit|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Σύνολο Προκαταβολών
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div style='text-align: center' class="ui blue header segment">Υπόλοιπες Πληροφορίες</div>
+        <div style='text-align: center' class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                           {{ vendor.address}}
+                    </div>
+                    <div class="label">
+                        Διεύθυνση
+                    </div>
+                </div>
+                <div class="ui segment">
+                    {{ vendor.description }}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+{% endblock %}

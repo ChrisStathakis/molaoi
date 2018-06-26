@@ -1,0 +1,47 @@
+{% extends 'PoS/lianiki/show_categories_lianiki.html' %}
+
+
+{% block center %}
+    <div style="width: 85%" class="ui segments">
+        <div class="ui inverted blue segment">
+            <h2 style="text-align: center">{{ categories.title }}</h2>
+        </div>
+        <div class="ui segments">
+            <div class="ui horizontal segments">
+                <div class="ui segment">
+
+                <a href="/PoS/lianiki/order/{{ order.id }}" class="ui massive green button"><i class="huge browser icon"></i><br>Επιστροφή</a>
+
+                </div>
+                <div class="ui segment">
+                <form method="get">
+                    <div class="ui search">
+                        <div style="width: 100%; text-align: center;" class="ui icon input">
+                            <input  class="prompt" name="search_products" type="text" placeholder="Αναζήτηση Προϊόντος..">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </form>
+            </div>
+            </div>
+
+
+            <div class="ui divider segment">Ολα τα Προιόντα</div>
+            <div class="ui segment">
+                {% for ele in products %}
+
+                <a style="width: 30%;height:200px;text-align: center" href="/PoS/lianiki/order/{{ order.id }}/{{ ele.id }}/add/" class="ui huge  button segment">
+                    <section style="color: #ff6415">{{ ele.title|truncatechars:20 }}<br>
+                    <br>Τιμή: {{ ele.price }} €</section>
+
+                    Κωδικός Barcode:{{ ele.product_id }}
+                    </a>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

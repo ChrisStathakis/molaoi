@@ -1,0 +1,98 @@
+{% extends 'inventory/homepageNew.html' %}
+
+
+{% block left_side %}
+     <div class="ui vertical menu" id="warehouse_menu">
+        <a href='/αποθήκη/'class=" item">Home</a>
+        <a href="/αποθήκη/προιόντα/" class="item">Προιόντα</a>
+        <a href="/αποθήκη/προμηθευτές/" class="active item">Προμηθευτές</a>
+        <a href="/αποθήκη/τιμολόγια/" class="item">Τιμολόγια</a>
+    </div>
+
+    <div class="ui blue inverted button segment">
+        <a style="color:white;" href="/αποθήκη/προμηθευτές/διαχείρηση-επιταγών/">Διαχείρηση Επιταγών</a>
+    </div>
+{% endblock %}
+{% block center %}
+
+    {% if messages %}
+        <div class="ui green message">
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} style="text-decoration: none;" class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        </div>
+    {% endif %}
+    <table class="ui celled structured table">
+        <div class="ui left floated main menu">
+                <div class="header item">
+                    <h2>'Ολα οι Προμηθευτές</h2>
+                </div>
+                <div class="item">
+                    <form method="get">
+                        <div class="ui search">
+                            <div class="ui icon input">
+                                <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                                <i class="search icon"></i>
+                            </div>
+                            <div class="results"></div>
+                        </div>
+                    </form>
+                </div>
+                <a href="/αποθήκη/προμηθευτές/δημιουργία/" class="popup icon item" id="my_button" data-content="Προσθήκη Προμηθευτή">
+                    <i class="add square green icon"></i>
+                </a>
+        </div>
+        <thead>
+            <tr>
+                <th rowspan="2"></th>
+                <th rowspan="2">Προμηθευτής</th>
+                <th rowspan="2">Email</th>
+                <th rowspan="2">ΔΟΥ -ΑΦΜ</th>
+                <th colspan="2">Στοιχεία</th>
+                <th rowspan="2">Προσθήκη Προκαταβολής</th>
+
+            </tr>
+            <tr>
+                <th>Σύνολο Προκαταβολών</th>
+                <th>Πιστωτικό Υπόλοιπο</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ele in vendors %}
+            <tr>
+                <td>
+                      <a class="popup icon item" data-content='Επεξεργασία' href="/αποθήκη/προμηθευτές/επεξεργασία/{{ ele.id }}/">
+                          <i class="edit icon"></i>
+                      </a>
+                </td>
+                <td>{{ ele.title }}</td>
+                <td>{{ ele.email }}</td>
+                <td>{{ ele.doy.title }}, {{ ele.afm}}</td>
+                {% if ele.remaining_deposit > 0 %}
+                    <td style="background-color: darkseagreen">{{ ele.remaining_deposit|floatformat:2 }} €</td>
+                {% else %}
+                    <td>{{ ele.remaining_deposit|floatformat:2 }} €</td>
+                {% endif %}
+                {% if ele.balance > 0 %}
+                    <td style="background-color: indianred">{{ ele.balance|floatformat:2 }} €</td>
+                {% else %}
+                    <td>{{ ele.balance|floatformat:2 }} €</td>
+                {% endif %}
+                <td><a href="/αποθήκη/προμηθευτές/προκαταβολή/{{ ele.id }}/" class="ui green button"> Προκαταβολή</a>
+                    <a style="margin-top: 1%" href="/αποθήκη/προμηθευτές/επιταγή/{{ ele.id }}/" class="ui green button"> Επιταγή</a></td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+
+{% endblock %}
+
+{% block right_side %}
+
+{% endblock %}
+

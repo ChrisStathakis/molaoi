@@ -1,0 +1,879 @@
+{% extends 'inventory/welcome_page.html' %}
+
+
+
+{% block left_side %}
+
+
+<script>
+$('.activating.element')
+  .popup()
+;
+</script>
+
+
+
+
+  <div class="ui segments">
+    <div style='text-align:center;' class="ui blue inverted header segment">
+        <h4> Προσθήκη Ημέρας  </h4>
+    </div>
+    <div class='ui horizontal segments'>
+        <div class ="ui segment">
+           <a style="width: 100%" href="/katastimata/new-esoda" class="ui green inverted button">Δημιουργία Νέας Ημέρας</a>
+        </div>
+    </div>
+
+    <div class="ui segments">
+         <div  class="ui segment">
+        <div class="ui blue inverted button ">
+            <a style="width: 100%;" href="/katastimata/">Καθαρισμός Φίλτρων</a>
+        </div>
+    </div>
+    
+    <div class="ui segment">
+    <form class="ui form" method="post">{% csrf_token %}
+        <div class="ui segment">
+         
+            <div class="ui search">
+                <div class="ui icon input">
+                    <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+       
+   </div>
+    <div class="ui sub header">Κατάστημα</div>
+    <div class="field">
+        <select id='vendor_name' name="vendor_name">
+          <option value=""></option>
+          {% for ele in vendors %}
+              <option  value="{{ ele }}">{{ ele }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+
+    <div class="ui sub header">Χρονος</div>
+    <input name="date_pick" placeholder="{{ date_pick }}" value="{{ date_pick }}">
+            <input style="width: 100%;" class="ui green inverted button" type="submit">
+        </form>
+    </div>
+
+    </div>
+    <div class="ui divider segment"></div>
+    <div style="text-align:center;" class="ui blue inverted header segment">
+        <h4> {{ year }}</h4>
+    </div>
+    <div class='ui horizontal segments'>
+        <div class ="ui red inverted segment">
+            'Εσοδα Φυσικών {{ year.fisika_income }} €
+        </div>
+        <div class ="ui green inverted  segment">
+            Όλα  {{ year.ola_income }} €
+        </div>
+    </div>
+
+        </div>
+        <a  target='_blank' href="/admin/esoda_katastimata/yearmeter/" class ='ui blue button'>{{ year_meter }} Χρόνια.</a>
+{% endblock %}
+
+{% block center %}
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js'></script>
+<div class="row">
+  <canvas id="myChart" width="200" height="100"></canvas>
+  <script>
+  var ctx = document.getElementById("myChart").getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'horizontalBar',
+      data: {
+          labels: ['Boom', "Παιδικό", "Υποκατ", "Σκάλα", "MyModa", "Σύνολο Φυσικών Καταστ.", "Γενικό Σύνολο"],
+          datasets: [{
+              label: '€ Euro',
+
+              data: [
+                {% for ele in total_per_month %}
+                {{ boom|floatformat:2 }}, {{ pediko_total|floatformat:2 }}, {{ topiko|floatformat:2 }},{{ skala|floatformat:2 }},{{ my_moda|floatformat:2 }},{{ all_retail|floatformat:2 }},{{ all_incomes|floatformat:2 }},
+                {% endfor %}
+              ],
+
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'green'
+              ],
+              borderColor: [
+                  'rgba(255,99,132,1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'green'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero:true
+                  }
+              }]
+          }
+      }
+  });
+  </script>
+</div>
+
+    {% if kat_name %}
+    <div style="min-width: 100%" class="ui styled accordion">
+        <div class="title">
+            <i class="dropdown icon"></i>
+            Κατάστημα {{  kat_name }},
+        </div>
+          <div class=" active content">
+             <table class="ui celled structured table">
+                  <thead>
+                      <tr>
+                          <th>Μήνας</th>
+                          {% for year in years %}
+                          <th>{{ year }}</th>
+                          {% endfor %}
+
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for ele in month_ana %}
+                        <tr>
+                            <td>
+                              <div class="ui button" data-inverted="" data-tooltip="Add users to your feed" data-position="top left">
+                                {{ ele.0 }}
+                              </div>
+                            </td>
+                            {% for year in ele.1 %}
+                                <td>{{ year }} €</td>
+                            {% endfor %}
+                        </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+
+          </div>
+        </div>
+    {% else %}
+    <div style="min-width: 100%" class="ui styled accordion">
+        <div class="title">
+            <i class="dropdown icon"></i>
+            Πληροφορίες τρέχων Μήνα
+        </div>
+          <div class=" active content">
+             <table class="ui celled structured table">
+                  <thead>
+                      <tr>
+                          <th>Ημερομηνία</th>
+                          <th>Παιδικό</th>
+                          <th>Β Υποκατ.</th>
+                          <th>Boom</th>
+                          <th>Σκάλα</th>
+                          <th>Σύνολο Φυσ. Κατ.</th>
+                          <th>MyModa</th>
+                          <th>Γενικό Σύνολο</th>
+                          <th>Σχόλια</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for ele in all_esoda %}
+
+                          <tr>
+                              <td><a href="/katastimata/esodo/{{ ele.id }}">{{ ele.title }}</a></td>
+          					<td>{{ ele.pediko|floatformat:2  }} €</td>
+                              <td>{{ ele.topiko_katastima|floatformat:2  }} €</td>
+                              <td>{{ ele.boom|floatformat:2  }} €</td>
+                              <td>{{ ele.skala|floatformat:2  }} €</td>
+                              <td>{{ ele.sinolo_fisikon|floatformat:2  }} €</td>
+                              <td>{{ ele.mymoda|floatformat:2  }} €</td>
+                              <td>{{ ele.sinolo_olon|floatformat:2  }} €</td>
+                              <td>{{ ele.comments|default_if_none:"Ουδέν Σχόλιο" }}</td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+
+          </div>
+          <div class="title">
+            <i class="dropdown icon"></i>
+            Πληροφορίες Τρέχων Χρονιάς
+          </div>
+          <div class="active content">
+               <table class="ui celled structured table">
+                    <thead>
+                        <tr>
+                            <th>Ημερομηνία</th>
+                            <th>Παιδικό</th>
+                            <th>Β Υποκατ.</th>
+                            <th>Boom</th>
+                            <th>Σκάλα</th>
+                            <th>Σύνολο Φυσ. Κατ.</th>
+                            <th>MyModa</th>
+                            <th>Γενικό Σύνολο</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ele in total_per_month %}
+
+                            <tr>
+                                <td>{{ ele.0 }}</td>
+            					<td>{{ ele.1|floatformat:2  }} €</td>
+                                <td>{{ ele.2|floatformat:2  }} €</td>
+                                <td>{{ ele.7|floatformat:2  }} €</td>
+                                <td>{{ ele.3|floatformat:2  }} €</td>
+                                <td>{{ ele.4|floatformat:2  }} €</td>
+                                <td>{{ ele.5|floatformat:2  }} €</td>
+                                <td>{{ ele.6|floatformat:2  }} €</td>
+                                
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+      </div>
+    {% endif %}
+
+
+
+{% endblock %}
+
+
+{% block right_side %}
+<div class="row">
+  <canvas id="myChart1" width="200" height="100"></canvas>
+  <script>
+  var ctx = document.getElementById("myChart1").getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'horizontalBar',
+      data: {
+          labels: ['Boom', "Παιδικό", "Υποκατ", "Σκάλα", "MyModa", "Σύνολο Φυσικών Καταστ.", "Γενικό Σύνολο"],
+          datasets: [{
+              label: '# of Euro',
+
+              data: [
+                {{ diff_be.6|floatformat:2 }},  {{ diff_be.0|floatformat:2 }} , {{ diff_be.1|floatformat:2 }},{{ diff_be.2|floatformat:2 }},{{ diff_be.3|floatformat:2 }},{{ diff_be.4|floatformat:2 }},{{ diff_be.5|floatformat:2 }},
+
+              ],
+
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'green'
+              ],
+              borderColor: [
+                  'rgba(255,99,132,1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'green'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero:true
+                  }
+              }]
+          }
+      }
+  });
+  </script>
+
+
+</div>
+
+
+
+    <div class="ui segments">
+        <div style='text-align: center' class="ui inverted blue segment">Επόμενη Χρήση </div>
+
+
+        <div class="ui fluid horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ month.title }}
+                    </div>
+                    <div class="label">
+                        Μήνας
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment"></div>
+
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ year.title }}
+                    </div>
+                    <div class="label">
+                        Τρέχων Έτος
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui divider segment"></div>
+
+
+        <div style='text-align: center' class="ui header blue segment">Πληροφορίες Καταστημάτων</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ all_retail_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Φυσικών Καταστημάτων
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ boom_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Boom
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro green icon"></i> {{ all_incomes_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Όλων.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ pediko_total_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Παιδικό Μολάοι
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                         <i class="euro blue icon"></i> {{ topiko_next|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Β Υποκατάστημα
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ skala_next|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Σκάλα
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui blue header segment">Πληροφορίες MyModa</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ my_moda_next|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        MyModa
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+
+                <div class="ui mini green inverted statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ my_moda_avg_next|floatformat:2 }}
+                    </div>
+                    <div style="color:darkgray;" class="label">
+                        Μέσα Έσοδα MyModa
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui divider segment"></div>
+        <div style='text-align: center' class="ui header blue segment">Έσοδα ανά Ημέρα</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ all_retail_avg_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Φυσικών Καταστημάτων
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ boom_avg_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Boom
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro green icon"></i> {{ all_incomes_avg_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Όλων.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ pediko_avg_next|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Παιδικό Μολάοι
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                         <i class="euro blue icon"></i> {{ topiko_avg_next|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Β Υποκατάστημα
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ skala_avg_next|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Σκάλα
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ui segments">
+        <div style='text-align: center' class="ui inverted blue segment">Επιλεγμένο Διάστημα , {{ date_pick }}</div>
+
+
+        <div class="ui fluid horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ month.title }}
+                    </div>
+                    <div class="label">
+                        Μήνας
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment"></div>
+
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ year.title }}
+                    </div>
+                    <div class="label">
+                        Τρέχων Έτος
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui divider segment"></div>
+
+
+        <div style='text-align: center' class="ui header blue segment">Πληροφορίες Καταστημάτων</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ all_retail|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Φυσικών Καταστημάτων
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ boom|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Boom
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro green icon"></i> {{ all_incomes|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Όλων.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ pediko_total|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Παιδικό Μολάοι
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                         <i class="euro blue icon"></i> {{ topiko|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Β Υποκατάστημα
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ skala|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Σκάλα
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui blue header segment">Πληροφορίες MyModa</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ my_moda|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        MyModa
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+
+                <div class="ui mini green inverted statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ my_moda_avg|floatformat:2 }}
+                    </div>
+                    <div style="color:darkgray;" class="label">
+                        Μέσα Έσοδα MyModa
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="ui divider segment"></div>
+        <div style='text-align: center' class="ui header blue segment">Έσοδα ανά Ημέρα</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ all_retail_avg|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Φυσικών Καταστημάτων
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ boom_avg|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Boom
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro green icon"></i> {{ all_incomes_avg|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Όλων.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ pediko_avg|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Παιδικό Μολάοι
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                         <i class="euro blue icon"></i> {{ topiko_avg|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Β Υποκατάστημα
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ skala_avg|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Σκάλα
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ui segments">
+        <div style='text-align: center' class="ui inverted blue segment">Προηγούμενη Χρήση </div>
+
+
+        <div class="ui fluid horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ month.title }}
+                    </div>
+                    <div class="label">
+                        Μήνας
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment"></div>
+
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        {{ year.title }}
+                    </div>
+                    <div class="label">
+                        Τρέχων Έτος
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui divider segment"></div>
+
+
+        <div style='text-align: center' class="ui header blue segment">Πληροφορίες Καταστημάτων</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ all_retail_last|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Φυσικών Καταστημάτων
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ boom_last|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Boom
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro green icon"></i> {{ all_incomes_last|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Όλων.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ pediko_total_last|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Παιδικό Μολάοι
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                         <i class="euro blue icon"></i> {{ topiko_last|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Β Υποκατάστημα
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ skala_last|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Σκάλα
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div style='text-align: center' class="ui blue header segment">Πληροφορίες MyModa</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ my_moda_last|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        MyModa
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+
+                <div class="ui mini green inverted statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ my_moda_avg_last|floatformat:2 }}
+                    </div>
+                    <div style="color:darkgray;" class="label">
+                        Μέσα Έσοδα MyModa
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="ui divider segment"></div>
+        <div style='text-align: center' class="ui header blue segment">Έσοδα ανά Ημέρα</div>
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini  statistic">
+                    <div class="value">
+                        <i class="euro green icon"></i> {{ all_retail_avg_last|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Φυσικών Καταστημάτων
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                       <i class="euro green icon"></i> {{ all_incomes_avg_last|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Έσοδα Όλων.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ pediko_avg_last|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                        Παιδικό Μολάοι
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                         <i class="euro blue icon"></i> {{ topiko_avg_last|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Β Υποκατάστημα
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui mini grey statistic">
+                    <div class="value">
+                        <i class="euro blue icon"></i> {{ skala_avg_last|floatformat:2  }}
+                    </div>
+                    <div class="label">
+                        Σκάλα
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'inventory/welcome_page.html' %}
+
+
+{% block left_side %}
+
+
+    <div class="ui segments">
+        <div class="ui segment">
+
+        </div>
+        <div class="ui grid segment ">
+            <div class="ui vertical fluid tabular menu">
+              <a href="/reports/products/" class="item">
+                Προιόντα
+              </a>
+
+              <a href="/reports/vendors/" class="item">
+                Προμηθευτές
+              </a>
+              <a href="/reports/orders/" class="item">
+                Τιμολόγια
+              </a>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock %}
+
+{% block center %}
+    <div class="ui segments">
+        <div class="ui inverted blue header segment">
+            Γενικά Στοιχεία
+        </div>
+        <div class="ui segments">
+            <div class="ui statistics segment">
+
+                <div class="statistic">
+                    <div class="value">
+                      {{ products.count }}
+                    </div>
+                    <div class="label">
+                      Συνολικά Προϊόντα
+                    </div>
+                </div>
+
+                <div class="statistic">
+                    <div class="value">
+                      {{ categories.count }}
+                    </div>
+                    <div class="label">
+                      Συνολικές Κατηγορίες
+                    </div>
+                </div>
+
+                <div class="statistic">
+                    <div class="value">
+                      {{ vendors.count }}
+                    </div>
+                    <div class="label">
+                      Συνολικοί Προμηθευτές
+                    </div>
+                </div>
+                <div class="statistic">
+                    <div class="value">
+                      {{ orders.count }}
+                    </div>
+                    <div class="label">
+                      Συνολικά Τιμολόγια
+                    </div>
+                </div>
+            </div>
+            <div class="ui divider segment"></div>
+            <div class="ui header segment">
+                <p>Μέσοι όροι</p>
+            </div>
+            <div class="ui statistics segment">
+
+                <div class="statistic">
+                    <div class="value">
+                      {{ avg_cat|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                       Προϊόντα ανά Κατηγορία
+                    </div>
+                </div>
+
+                <div class="statistic">
+                    <div class="value">
+                      {{ avg_vendor|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                      Προϊόντα ανά Προμηθευτή
+                    </div>
+                </div>
+
+                <div class="statistic">
+                    <div class="value">
+                      {{ avg_order|floatformat:2 }}
+                    </div>
+                    <div class="label">
+                      Προϊόντα ανά Τιμολόγιο
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+{% endblock %}

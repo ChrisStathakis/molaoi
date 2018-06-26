@@ -1,0 +1,236 @@
+{% extends 'inventory/orders_edit_section_NEW.html' %}
+
+{% block left_side %}
+
+    
+    <div class="ui segments">
+        {% if messages %}
+            <div class="ui green message">
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
+        {% endif %}
+	
+		<div style="text-align:center;" class ="ui  segment">
+			<div class="ui mini  blue statistic">
+				<div class="label">
+					Αρ. Παραγγελίας
+				</div>
+				<div class=" value">
+					{{ order.code }}
+				</div>
+			</div>
+		</div>
+		<div class="ui horizontal segments">
+		
+			<div style="text-align:center;" class ="ui segment">
+				<div class="ui mini blue statistic">
+					<div class="label">
+						Ημερομηνία
+					</div>
+					<div class="value">
+						{{ order.date }}
+					</div>
+				</div>
+			</div>
+
+		
+			<div style="text-align:center;" class ="ui segment">
+				<div class="ui mini blue  statistic">
+					<div class="label">
+						Προμηθευτης
+					</div>
+					<div class="value">
+						{{ order.vendor.title }}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui horizontal segments"> 
+			<div style="text-align:center;" class ="ui red segment">
+				<div class="ui mini blue statistic">
+					<div class="value">{{ order.total_price_after_discount|floatformat:2  }} €</div>
+					<div class="label">Αξία μετά την έκπτωση</div>
+				</div>
+			</div>
+			<div style="text-align:center;" class ="ui red segment">
+				<div class="ui mini blue statistic">
+					<div class="value">{{ order.total_taxes|floatformat:2  }} €</div>
+					<div class="label">ΦΠΑ</div>
+				</div>
+			</div>
+		</div>
+		<div style="text-align:center;" class ="ui green segment">
+			<div class="ui blue statistic">
+				<div class="value">{{ order.total_price|floatformat:2  }} €</div>
+				<div class="label">Τελική Αξία</div>
+			</div>
+		</div>
+        <div class="ui green segment">
+             <a class="popup blue icon" href="/αποθήκη/τιμολόγια/{{ order.id }}/επεξεργασία/" data-contest="Επεξεργασία">
+                 <i class="edit icon"></i>
+             </a>
+            <a href="/admin/warehouse/product/{{ ele.id }}/delete/">
+                <i class="trash red icon"></i>
+            </a>
+        </div>
+    </div>
+
+
+    
+		
+        
+        <div class="ui segments">
+		<div class="ui black divider segment"></div>
+    </div>
+
+
+    
+{% endblock %}
+
+
+
+{% block right_side %}
+
+    <div class="ui segments">
+
+        <div class="ui blue segment header">
+            <a href ='/reports/orders/{{ order.id }}'><p style="text-align: center">{{ order.code }}, {{ order.vendor.title }}</p></a>
+        </div>
+
+        <div class="ui horizontal segments">
+            <div class="ui checkbox segment">
+                <input type="checkbox" name="see_products">
+                <label>Δες όλα τα προιόντα</label>
+            </div>
+
+            <div class="ui search segment">
+                <form method="get">
+                    <div class="ui icon input">
+                        <input class="prompt" name="search_pro" type="text" placeholder="Αναζήτηση...">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </form>
+            </div>
+            <a href="/αποθήκη/τιμολόγια/προσθήκη-προιόντος/{{ order.id }}/" class="ui blue button segment">
+                <div  class="popup icon item"  data-content="Δημιουργία προϊόντος">
+                    <i style="width: 100%;" class="ui add inverted blue icon"></i>
+                </div>
+            </a >
+        </div>
+        <div class="ui segment">
+
+       <table  class="ui selectable table ">
+        <thead>
+            <tr>
+                <th class=" two wide">Κωδικός Προιόντος</th>
+                <th class="one wide">Κωδικός Barcode</th>
+                <th class=" one wide">Όνομα </th>
+                <th class=" one wide"> </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ele in products %}
+                <tr>
+                    <td>{{ ele.description }}</td>
+                    <td>{{ ele.product_id }}</td>
+                    <td>{{ ele.title }}</td>
+                    <td>
+                        <a style="width: 100%" class="popup blue icon" href="/αποθήκη/τιμολόγια/check/{{ order.id }}/{{ ele.id }}/" data-contest="Επεξεργασία">
+                            <i style="width: 100%" class="ui edit blue inverted  button">Προσθήκη</i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+       </table>
+    </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+{% block center %}
+    <div class="ui segmeνts">
+        <div class="ui inverted header blue segment">
+                Προιόντα Τιμολογίου
+        </div>
+        {% if order_items.count > 0 %}
+				<div class="ui blue segments">
+                    <div class="ui segment">
+                        <table class="ui blue table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Προιόν</th>
+                                    <th>Ποσότητα - M M</th>
+                                    <th>Αξία Μονάδας -- Έκπτωση</th>
+                                    <th>Aξία μετά την έκπτωση</th>
+                                    <th>Χρώμα</th>
+                                    <th>Μέγεθος</th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                {% for ele in order_items %}
+                                    <tr>
+                                        <td>
+                                            <a class="ui right floating blue icon" href="/αποθήκη/τιμολόγια/επεξεργασία-προϊόντος/{{ order.id }}/{{ ele.id }}/" data-contest="Επεξεργασία">
+                                                <i class="edit icon"></i>
+                                            </a>
+                                            <a class="ui right floating blue icon" href="/αποθήκη/τιμολόγια/διαγραφή-προιόντος/{{ ele.id }}/" data-contest="Επεξεργασία">
+                                                <i class="remove red circle icon"></i>
+                                            </a>
+                                        </td>
+                                        <td>{{ ele.product.title }}</td>
+                                        <td>{{ ele.qty|floatformat:1 }} - {{ ele.unit }}</td>
+                                        <td>{{ ele.price }}  € ----- {{ ele.discount }} %</td>
+                                        <td>{{ ele.price_after_discount|floatformat:2  }} €</td>
+                                        {% if ele.color %}
+                                            <td>{{ ele.color.title }}</td>
+                                        {% else %}
+                                            <td>----</td>
+                                        {% endif %}
+                                        {% if ele.size %}
+                                            <td>{{ ele.size.title }}</td>
+                                        {% else %}
+                                            <td>-----</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+        {% else %}
+                <div class="ui segment">
+                    <p> Κανένα Προιόν. </p>
+                </div>
+        {% endif %}
+    </div>
+{% endblock %}

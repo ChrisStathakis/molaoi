@@ -1,0 +1,42 @@
+{% extends 'reports/incomes.html' %}
+
+
+
+{% block center %}
+    <div class="ui segment">
+        <div style="text-align: center;" class="ui blue inverted header segment">
+            <h1>{{ order.title }}</h1>
+        </div>
+        <div class="ui segment">
+            <table class="ui table ">
+                <thead>
+                    <tr>
+                        <th>Περιγραφή</th>
+                        <th>Κόστος Παραγωγής</th>
+                        <th>Αξία Μονάδας</th>
+                        <th>Ποσότητα</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ele in order_items %}
+                        <tr>
+                            <td>{{ ele.title.title }}</td>
+                            <td>{{ ele.cost }} €</td>
+                            <td>{{ ele.price }} €</td>
+                            <td>{{ ele.qty }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block right_side %}
+    <div class="ui segmen"
+
+{% endblock %}

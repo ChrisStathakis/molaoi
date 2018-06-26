@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head lang="el">
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <title>Warehouse</title>
+    <link rel="stylesheet" href="{% static 'Semantic-UI-CSS-master/semantic.min.css' %}">
+    <link rel="stylesheet" href="{% static 'my_static/site.css' %}">
+
+
+</head>
+<body>
+    <div class="ui grid">
+        
+        <div class="four wide column">a</div>
+        <div class="four wide column">til</div>
+        <div class="four wide column">
+            <a href="http://google.com" class="ui medium image">
+                <img src="https://www.w3.org/html/logo/downloads/HTML5_Logo_512.png">
+            </a>
+        </div>
+        <div class="four wide column">
+            <div class="ui right aligned category search">
+                <div class="ui icon input">
+                  <input class="prompt" type="text" placeholder="Search animals...">
+                  <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+        </div>
+    </div>
+
+
+<script type="text/javascript" src="{% static 'jquery-1.12.2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Semantic-UI-CSS-master/semantic.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'my_static/site.js' %}"></script>
+</body>
+
+
+</html>
