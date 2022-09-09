@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib import auth
-from django.core.context_processors import csrf
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import MyRegistrationForm
 
@@ -8,7 +7,6 @@ from .forms import MyRegistrationForm
 
 def log_in(request):
     c={}
-    c.update(csrf(request))
     return render(request,'log_in.html',c)
 
 
@@ -56,7 +54,7 @@ def register(request):
             form.save()
             return HttpResponseRedirect('/accounts/register_success')
     args={}
-    args.update(csrf(request))
+    
     args['form'] = MyRegistrationForm()
     return render(request,'register.html', args)
 

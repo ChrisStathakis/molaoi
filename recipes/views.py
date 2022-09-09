@@ -1,5 +1,4 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.core.context_processors import csrf
 from .forms import *
 
 # Create your views here.
@@ -95,7 +94,7 @@ def add_product_to_recipe(request,dk):
         'categories':recipe_categories,
 
     }
-    context.update(csrf(request))
+    
     return render(request,'recipes_manager/add_product_to_recipe.html',context)
 
 
@@ -122,7 +121,7 @@ def edit_recipe_id(request,dk):
         'categories':recipe_categories,
          'recipe_items': recipe_items,
     }
-    context.update(csrf(request))
+    
     return render(request, 'recipes_manager/edit_recipe_id_Νew.html',context)
 
 
@@ -151,7 +150,7 @@ def choose_product_to_recipe(request,dk):
 
 
     }
-    context.update(csrf(request))
+    
     return render(request,'recipes_manager/choose_product_to_recipe.html',context)
 
 
@@ -179,7 +178,7 @@ def edit_recipe_item_id(request,dk,pk):
         'recipe_items':recipe_items,
         'categories':recipe_categories,
     }
-    context.update(csrf(request))
+    
     return render(request,'recipes_manager/edit_recipe_item_id.html',context)
 
 def delete_recipe(request,dk):
@@ -207,7 +206,7 @@ def recipe_categories(request):
         'form':form,
         'categories':recipe_categories,
     }
-    context.update(csrf(request))
+    
     return render(request, 'recipes_manager/categories_section.html', context)
 
 
@@ -226,7 +225,7 @@ def edit_recipe_categories(request,dk):
         'form':form,
         'categories':recipe_categories,
     }
-    context.update(csrf(request))
+    
     return render(request, 'recipes_manager/categories_section.html', context)
 
 

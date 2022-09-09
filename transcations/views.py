@@ -5,7 +5,6 @@ from django.db.models import Q, Sum
 from inventory_manager.models import *
 from .models import *
 from inventory_manager.form import *
-from django.core.context_processors import csrf
 from .forms import *
 from django.utils import timezone
 import datetime
@@ -85,11 +84,7 @@ def pay_order_from_deposit(request, dk):
         'form':form,
         'orders':orders,
     }
-    context.update(csrf(request))
     return render(request,'inventory/pay_section/pay_orders_repayment.html',context)
-
-
-
 
 
 def pay_order(request, dk):

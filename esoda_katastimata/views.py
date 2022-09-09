@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponseRedirect
-from django.core.context_processors import csrf
+
 from django.db.models import Q
 from django.db.models import Sum, Avg, Count
 from django.contrib.admin.views.decorators import staff_member_required
@@ -546,7 +546,7 @@ def new_esoda(request):
         'form':form,
 
     }
-    context.update(csrf(request))
+    
     return render(request, 'katastimata_esoda/new_order.html', context)
 
 @staff_member_required
@@ -649,7 +649,7 @@ def create_new_month(request):
         'form':form,
         'title':title,
     }
-    context.update(csrf(request))
+    
     return render(request, 'PoS/admin_section_create_day.html', context)
 
 @staff_member_required
@@ -675,5 +675,5 @@ def create_new_year(request):
         'form':form,
         'title':title,
     }
-    context.update(csrf(request))
+   
     return render(request, 'PoS/admin_section_create_day.html', context)

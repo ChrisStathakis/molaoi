@@ -31,11 +31,11 @@ class WebOrder(models.Model):
 	zip_code = models.CharField(blank=True, null=True, max_length=8)
 	phone = models.CharField(blank=True, null=True, max_length=15)
 	name = models.CharField(blank=True, null=True, max_length=150)	
-	shipping_method = models.ForeignKey(Shipping, blank=True, null=True,)
-	payment_method = models.ForeignKey(PaymentMethod, blank=True, null=True,)
+	shipping_method = models.ForeignKey(Shipping, blank=True, null=True, on_delete=models.SET_NULL)
+	payment_method = models.ForeignKey(PaymentMethod, blank=True, null=True, on_delete=models.SET_NULL)
 	is_paid = models.BooleanField(default=False)
 	is_cancel = models.BooleanField(default=False)
-	status = models.ForeignKey(Status, blank=True, null=True)
+	status = models.ForeignKey(Status, blank=True, null=True, on_delete=models.SET_NULL)
 
 	def __str__(self):
 		return self.web_order

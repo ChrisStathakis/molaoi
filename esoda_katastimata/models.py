@@ -90,7 +90,7 @@ class MonthEsoda(models.Model):
     ola_income= models.DecimalField(default=0, max_digits=15,decimal_places=2)
     counter = models.IntegerField(default=0)
     status = models.CharField(max_length=1, default='a',choices=CHOICES)
-    year = models.ForeignKey(YearEsoda,null=True)
+    year = models.ForeignKey(YearEsoda, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.title
@@ -150,8 +150,8 @@ class AddEsoda(models.Model):
     sinolo_olon = models.DecimalField(default=0,max_digits=10,decimal_places=2,verbose_name='Όλα τα Έσοδα')
     comments = models.TextField(blank=True, null=True, verbose_name='Σχόλια')
 
-    month = models.ForeignKey(MonthEsoda)
-    year = models.ForeignKey(YearEsoda)
+    month = models.ForeignKey(MonthEsoda, on_delete=models.CASCADE)
+    year = models.ForeignKey(YearEsoda, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.title)

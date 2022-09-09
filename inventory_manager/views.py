@@ -2,9 +2,9 @@ from django.shortcuts import render,HttpResponseRedirect, redirect
 from products.models import *
 from inventory_manager.models import *
 from .form import *
-from django.core.context_processors import csrf
+
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.shortcuts import reverse
 
 def homepage(request):
     return render(request,'inventory_homepage.html')
@@ -25,7 +25,6 @@ def vendors(request):
     args={}
     args['vendors'] = vendors
     args['form']=form
-    args.update(csrf(request))
     return render(request,'vendor/vendors.html',args)
 
 
@@ -105,9 +104,6 @@ def products(request):
     args['form'] =form
     args['category'] = category
     args['vendors'] = vendors
-    args.update(csrf(request))
-
-
 
     return render(request,'products/products.html',args)
 
@@ -171,16 +167,8 @@ def edit_product_id(request,dk):
         'form':form,
         "product":product
     }
-    context.update(csrf(request))
+
     return render(request,'products/edit_product_id.html',context)
-
-
-
-
-
-
-
-
 
 
 #----------------------------------------------------------------------------------------------------#
@@ -201,7 +189,6 @@ def movements(request):
         'form':form,
         'vendors':vendors,
     }
-    args.update(csrf(request))
 
     return render(request,'movements/movements.html',args)
 
@@ -224,7 +211,6 @@ def add_product_to_order(request):
         'order':order,
         'form':form
     }
-    context.update(csrf(request))
     return render(request,'movements/add_product_to_form.html',context)
 
 
@@ -299,7 +285,6 @@ def edit_order_id(request,dk):
         'order':order,
         'products':products,
     }
-    context.update(csrf(request))
     return render(request, 'movements/edit_order_id.html',context)
 
 
@@ -320,7 +305,6 @@ def edit_item_order_id(request,dk):
 
     args={}
     args['form'] =form
-    args.update(csrf(request))
     return render(request,'movements/edit_item_order_id.html',args)
 
 

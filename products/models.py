@@ -1,6 +1,6 @@
 from django.db import models
 import os
-from django.core.urlresolvers import reverse
+from django.shortcuts import reverse
 from django.utils import timezone
 from time import time
 import datetime
@@ -53,7 +53,7 @@ class TaxesCity(models.Model):
 class Supply(models.Model):
     title = models.CharField(unique=True, max_length=70,verbose_name="'Ονομα")
     afm = models.CharField(max_length=9,blank=True,null=True,verbose_name="ΑΦΜ")
-    doy = models.ForeignKey(TaxesCity,verbose_name='Εφορία',null=True,blank=True)
+    doy = models.ForeignKey(TaxesCity, verbose_name='Εφορία', null=True, blank=True, on_delete=models.CASCADE)
     phone =models.CharField(max_length=10,null=True,blank=True,verbose_name="Τηλέφωνο")
     phone1=models.CharField(max_length=10,null=True,blank=True,verbose_name="Τηλέφωνο")
     fax= models.CharField(max_length=10,null=True,blank=True,verbose_name="Fax")
@@ -67,9 +67,6 @@ class Supply(models.Model):
     #managing deposits
     remaining_deposit = models.DecimalField(default=0,decimal_places=2, max_digits=10, verbose_name='Υπόλοιπο προκαταβολών')
 
-
-
-
     def __str__(self):
         return self.title
 
@@ -79,9 +76,6 @@ class Supply(models.Model):
     class Meta:
         ordering =['title']
         verbose_name="Προμηθευτές   "
-
-
-
 
 
 class Costumers(models.Model):
@@ -96,15 +90,10 @@ class Costumers(models.Model):
     address = models.CharField(max_length=40,null=True,blank=True,verbose_name='Διεύθυνση')
     balance = models.DecimalField(default=0,max_digits=10, decimal_places=3,verbose_name="Υπόλοιπο")
     afm = models.CharField(max_length=9,blank=True,null=True,verbose_name="ΑΦΜ")
-    DOY = models.ForeignKey(TaxesCity,verbose_name='Εφορία',blank=True,null=True)
+    DOY = models.ForeignKey(TaxesCity,verbose_name='Εφορία',blank=True,null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
-
-
-
-
-
 
 
 class Product(models.Model):
@@ -116,9 +105,9 @@ class Product(models.Model):
     price_buy = models.DecimalField(decimal_places=2,max_digits=6,default=0,verbose_name="Τιμή Αγοράς") # the price which you buy the product
     image =models.FileField(null=True,blank=True,)
 
-    category = models.ForeignKey(Category)
-    supplier = models.ForeignKey(Supply,verbose_name="Προμηθευτής")
-    costumer =models.ForeignKey(Costumers,null=True,blank=True,verbose_name="Πελάτης")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    supplier = models.ForeignKey(Supply,verbose_name="Προμηθευτής", on_delete=models.CASCADE)
+    costumer =models.ForeignKey(Costumers,null=True,blank=True,verbose_name="Πελάτης", on_delete=models.CASCADE)
 
     carousel = models.CharField(max_length=1,choices=FOCUS, default='n',verbose_name="Υπερχονδρική")
     reserve =models.DecimalField(default=0,verbose_name="Απόθεμα",max_digits=10, decimal_places=2)
@@ -228,10 +217,10 @@ class Size(models.Model):
 
 
 class ColorAttribute(models.Model):
-    title = models.ForeignKey(Color,)
+    title = models.ForeignKey(Color, on_delete=models.CASCADE)
     qty = models.IntegerField(default=0)
-    product = models.ForeignKey(Product,null=True, blank= True)
-    order_discount = models.IntegerField(null=True,blank=True, default=0,verbose_name="'Εκπτωση Τιμολογίου σε %")
+    product = models.ForeignKey(Product,null=True, blank= True, on_delete=models.CASCADE)
+    order_discount = models.IntegerField(null=True,blank=True, default=0,verbose_name="'Εκπτωση Τιμολογίου σε %", )
     price_buy = models.DecimalField(decimal_places=2,max_digits=6,default=0,verbose_name="Τιμή Αγοράς") # the price which you buy the product
 
     class Meta:
@@ -246,9 +235,9 @@ class ColorAttribute(models.Model):
 
 
 class SizeAttribute(models.Model):
-    title = models.ForeignKey(Size)
+    title = models.ForeignKey(Size, on_delete=models.CASCADE)
     qty = models.IntegerField(default=0)
-    color = models.ForeignKey(ColorAttribute, null=True, blank=True)
+    color = models.ForeignKey(ColorAttribute, null=True, blank=True, on_delete=models.CASCADE)
     order_discount = models.IntegerField(null=True,blank=True, default=0,verbose_name="'Εκπτωση Τιμολογίου σε %")
     price_buy = models.DecimalField(decimal_places=2,max_digits=6,default=0,verbose_name="Τιμή Αγοράς") # the price which you buy the product
 
@@ -257,11 +246,6 @@ class SizeAttribute(models.Model):
 
     def check_product_in_order(self):
         return str(self.color.product.title + '. Χρώμα : ' + self.color.title.title + ', Μέγεθος : ' +self.title.title)
-
-
-
-
-
 
 
 
@@ -274,18 +258,18 @@ class ChangeQtyOrder(models.Model):
 
 
 class ChangeQtyOrderItem(models.Model):
-    title = models.ForeignKey(Product)
-    order = models.ForeignKey(ChangeQtyOrder)
+    title = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(ChangeQtyOrder, on_delete=models.CASCADE)
     qty = models.DecimalField(default=0, max_digits=6, decimal_places=2)
 
 
 
 class ChangeQtyOrderItemColor(models.Model):
-    title = models.ForeignKey(ColorAttribute)
-    order = models.ForeignKey(ChangeQtyOrder)
+    title = models.ForeignKey(ColorAttribute, on_delete=models.CASCADE)
+    order = models.ForeignKey(ChangeQtyOrder, on_delete=models.CASCADE)
     qty = models.DecimalField(default=0, max_digits=6, decimal_places=2)
 
 class ChangeQtyOrderItemSize(models.Model):
-    title = models.ForeignKey(SizeAttribute)
-    order = models.ForeignKey(ChangeQtyOrder)
+    title = models.ForeignKey(SizeAttribute, on_delete=models.CASCADE)
+    order = models.ForeignKey(ChangeQtyOrder, on_delete=models.CASCADE)
     qty = models.DecimalField(default=0, max_digits=6, decimal_places=2)

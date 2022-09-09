@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head lang="el">
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Warehouse</title>
+    <link rel="stylesheet" href="{% static 'Semantic-UI-CSS-master/semantic.min.css' %}">
+    <link rel="stylesheet" href="{% static 'my_static/index.css' %}">
+
+
+
+</head>
+<body>
+
+
+
+   <div class="ui sticky header" id="homepage">
+        <h2 style="text-align:center;" class="header ">{{ title }}</h2>
+    </div>
+
+    <div class="ui sticky blue menu" id="nav_menu_up">
+        <h3 class="header big">{{ title }}</h3>
+        <a href="/" class="active item">Home</a>
+
+		<div class="ui simple dropdown item">
+			<a href="/αποθήκη">Αποθήκη</a>
+			<i class="dropdown icon"></i>
+			<div class="menu">
+			    <a style="width:100%" href="/αποθήκη/προιόντα/" class="item">Προϊόντα</a>
+                <a style="width:100%"  href="/αποθήκη/προμηθευτές/" class="item">Προμηθευτές</a>
+                <a style="width:100%" href="/αποθήκη/τιμολόγια/" class="item">Τιμολόγια</a>
+                <a style="width:100%" href="/αποθήκη/εργαλεία/" class="item">Εργαλεία</a>
+			</div>
+		</div>
+        <!--
+        <div class="ui simple dropdown item">
+			<a href="/συνταγές/">Συνταγές</a>
+			<i class="dropdown icon"></i>
+			<div class="menu">
+			  <div style="width:100%" class="item"><a href='/συνταγές/νέα/'>Δημιουργία</a></div>
+			  <div style="width:100%" class="item"><a href="/συνταγές/κατηγορίες/" >Κατηγορίες</a></div>
+			  <div style="width:100%" class="item">'Ολες οιΣυνταγές</div>
+			</div>
+		</div>
+        -->
+		<div class="ui simple dropdown item" id="main_menu_pay">
+			<a href="/πληρωμές-εισπράξεις/">'Εξοδα</a>
+			<i class="dropdown icon"></i>
+			<div class="menu">
+			  <a style="width:100%" class="item" href ="/πληρωμές-εισπράξεις/αποπληρωμές-τιμολογίων/">Αποπληρωμές Τιμολογίων</a>
+			  <a style="width:100%" class="item" href="/πληρωμές-εισπράξεις/πάγια-έξοδα/">Πάγια Έξοδα</a>
+			  <a style="width:100%" class="item" href="/katastimata/">Καταστήματα</a>
+              <a style="width:100%" class="item" href="/reports/warehouse/giorgos/">Εικόνα Επιχείρησης</a>
+              <a style="width:100%" class="item" href="{% url 'vacation' %}">Διακοπολόγιο</a>
+			</div>
+		</div>
+
+		<div class="ui simple dropdown item">
+			Reports
+			<i class="dropdown icon"></i>
+			<div class="menu">
+                <a style="width:100%" href="/reports/warehouse/" class="item">Αποθήκη</a>
+               <!-- <a style="width:100%" href="/reports/restaurant-reports/" class="item">Εστιατόριο</a> -->
+                <a style="width:100%" href="/reports/outcome/" class="item">Έξοδα</a>
+                <a style="width:100%" href="/reports/income/" class="item">Έσοδα</a>
+                <a style="width:100%" href="/reports/isologismos/" class="item">Ισολογισμός</a>
+			</div>
+		</div>
+		<a href="/PoS/" class="item">PoS</a>
+        <a class="item">Pda</a>
+        {% if request.user.is_authenticated %}
+		<a href='{% url "logout" %}' class="right item">
+            <div class="content">
+                <div class="ui sub header">Logout</div>
+                Manager
+            </div>
+        </a>
+        {% else %}
+        <a class="right item">
+            <div class="content">
+                <div class="ui sub header">Login</div>
+                Manager
+            </div>
+        </a>
+        {% endif %}    
+    </div>
+	<div class ="ui stackable grid">
+
+		<div class="four wide column">
+			{% block left_side %}
+
+
+			{% endblock%}
+		</div>
+
+
+
+		<div class="seven wide column">
+			{% block center %}
+                <div class="ui segments">
+                    <div style="text-align: center" class="ui blue inverted header segment ">Συνολική Εικόνα Επιχείρησης, Σήμερα είναι {{ day }}</div>
+                    <div class="ui horizontal segments">
+                        <div class="ui segments">
+                            <div style="text-align: center" class="ui red inverted header segment">Προιόντα Αποθήκης </div>
+
+                            <table class="ui table segment">
+                                <thead>
+                                    <tr>
+                                        <th>Προιόν</th>
+                                        <th>Stock Ασφαλείας</th>
+                                        <th>Υπόλοιπο Αποθήκης</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ele in products %}
+                                        <tr>
+                                            {% if ele.check_safe_stock == 'b' %}
+                                            <td>{{ ele.title }}</td>
+                                            <td>{{ ele.safe_stock|floatformat:1 }}</td>
+                                            <td>{{ ele.show_warehouse_remain|floatformat:1 }}</td>
+                                            {% else %}
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="ui segments">
+                            <div style="text-align: center" class="ui green inverted segment">Νέες αφίξεις στην αποθήκη</div>
+                            <table class="ui table segment">
+                                <thead>
+                                    <tr>
+                                        <th>Προιόν</th>
+                                        <th>Τεμάχια/Πόσοτητα που αφίκτηκαν</th>
+                                        <th>Υπόλοιπο Αποθήκης</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ele in products_arrive %}
+                                        <tr>
+                                            <td>{{ ele.product.title }}</td>
+                                            <td>{{ ele.qty|floatformat:1 }}</td>
+                                            <td>{{ ele.product.show_warehouse_remain|floatformat:1 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+			{% endblock%}
+		</div>
+
+
+
+		<div class="five wide column">
+		{% block right_side %}
+
+
+
+		{% endblock%}
+		</div>
+	</div>
+
+
+<script type="text/javascript" src="{% static 'jquery-1.12.2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'semantic-ui-daterangepicker-master/moment.js' %}"></script>
+<script type="text/javascript" src="{% static 'semantic-ui-daterangepicker-master/daterangepicker.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'semantic-ui-daterangepicker-master/daterangepicker.css' %}" />
+
+
+<script type="text/javascript" src="{% static 'Semantic-UI-CSS-master/semantic.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'my_static/index.js' %}"></script>
+{% block additional_js %}
+
+{% endblock %}
+<script type="text/javascript">
+$(document).ready(function() {
+
+  $('input[name="daterange"]').daterangepicker();
+});
+
+
+$(function() {
+
+    var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('input[name="date_pick"]').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('input[name="date_pick"]').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+
+		       "Τρέχων Χρονιά": [moment().startOf('year'), moment().endOf('year')],
+            "Προηγούμενο Τρίμηνο": [moment().subtract(3, 'month'), moment()],
+            "Προηγούμενο Εξάμηνο": [moment().subtract(6, 'month'), moment()],
+			      "Προηγούμενη χρονιά": [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+		   'Next Month': [moment().subtract(-1, 'month').startOf('month'), moment().subtract(-1, 'month').endOf('month')],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+           'Today': [moment(), moment()],
+        }
+    }, cb);
+
+    cb(start, end);
+
+});
+</script>
+
+</body>
+
+
+</html>

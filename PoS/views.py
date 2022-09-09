@@ -2,7 +2,6 @@ from django.shortcuts import render, HttpResponseRedirect
 from .models import *
 from .forms import *
 from recipes.models import *
-from django.core.context_processors import csrf
 from django.db.models import Q
 from django.contrib import messages
 from django.db.models import Avg, Sum
@@ -42,7 +41,7 @@ def new_order(request,dk):
         'form':form,
         'table_id':table_id
     }
-    context.update(csrf(request))
+    
     return render(request, 'PoS/new_order.html', context)
 
 
@@ -178,7 +177,6 @@ def order_pay_not_complete(request, dk):
         'form':form,
         'order':order,
     }
-    context.update(csrf(request))
 
     return render(request, 'PoS/add_product_to_order.html', context)
 
@@ -326,7 +324,7 @@ def admin_section_create_new_day(request):
         'form':form,
         'title':title,
     }
-    context.update(csrf(request))
+    
     return render(request, 'PoS/admin_section_create_day.html', context)
 
 
@@ -352,7 +350,7 @@ def admin_section_create_new_month(request):
         'form':form,
         'title':title,
     }
-    context.update(csrf(request))
+    
     return render(request, 'PoS/admin_section_create_day.html', context)
 
 
@@ -376,7 +374,7 @@ def admin_section_create_new_year(request):
         'form':form,
         'title':title,
     }
-    context.update(csrf(request))
+    
     return render(request, 'PoS/admin_section_create_day.html', context)
 
 
@@ -481,7 +479,7 @@ def new_lianiki_order(request):
     context ={
         'form':form
     }
-    context.update(csrf(request))
+    
     return render(request, 'PoS/lianiki/new_lianiki_order.html', context)
 
 
@@ -660,7 +658,7 @@ def lianiki_edit_order_item(request, dk, pk):
         'order':order,
         'order_item':order_item,
     }
-    context.update(csrf(request))
+   
     return render(request, 'PoS/lianiki/lianiki_add_product.html' , context)
 
 
@@ -700,7 +698,6 @@ def lianiki_order_pay_not_complete(request, dk):
         'form':form,
         'order':order,
     }
-    context.update(csrf(request))
 
     return render(request, 'PoS/lianiki/lianiki_add_product.html', context)
 

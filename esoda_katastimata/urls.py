@@ -1,20 +1,20 @@
-from django.conf.urls import url
+from django.urls import re_path
 from .views import *
 
 
 
 
 urlpatterns =[
-    url(r'^$',view=homepage),
-    url(r'active-month/$',view=create_new_month),
-    url(r'deactive-month/$',view=deactive_month),
-    url(r'active-year/$',view=create_new_year),
-    url(r'deactive-year/$',view=deactive_year),
-    url(r'new-esoda/$',view=new_esoda),
-    url(r'esodo/(?P<dk>\d+)/$',view=edit_day),
+    re_path(r'^$',view=homepage),
+    re_path(r'active-month/$',view=create_new_month),
+    re_path(r'deactive-month/$',view=deactive_month),
+    re_path(r'active-year/$',view=create_new_year),
+    re_path(r'deactive-year/$',view=deactive_year),
+    re_path(r'new-esoda/$',view=new_esoda),
+    re_path(r'esodo/(?P<dk>\d+)/$',view=edit_day),
 
-    url(r'income/year/(?P<yk>\d+)/$',view=esoda_income_choose_year),
-    url(r'income/month/(?P<mk>\d+)/$',view=esoda_income_choose_month),
+    re_path(r'income/year/(?P<yk>\d+)/$',view=esoda_income_choose_year),
+    re_path(r'income/month/(?P<mk>\d+)/$',view=esoda_income_choose_month),
 
 
 

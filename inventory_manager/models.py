@@ -16,7 +16,7 @@ class PaymentMethod(models.Model):
     # create a unique Payment method like Cash, Paypal, a specific bank etc and
     # if you want you can group it with the payment_group
     title = models.CharField(max_length=64,unique=True)
-    payment_group = models.ForeignKey(PaymentMethodGroup, null=True, blank=True)
+    payment_group = models.ForeignKey(PaymentMethodGroup, null=True, blank=True, on_delete=models.SET_NULL)
     balance = models.DecimalField(default=0,max_digits=10,decimal_places=2)
 
 
@@ -26,29 +26,24 @@ class PaymentMethod(models.Model):
 
 class VendorDepositOrder(models.Model):
     title = models.CharField(max_length=64,blank=True)
-    payment_method = models.ForeignKey(PaymentMethod)
-    vendor = models.ForeignKey(Supply)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Supply, on_delete=models.CASCADE)
     value = models.DecimalField(decimal_places=3,max_digits=10)
     day_added = models.DateField(auto_now=True)
-
-
 
     def __str__(self):
         return self.title
 
 
-
-
-
 class Order(models.Model):
     CHOICES =(('a','Ολοκληρώθηκε'),('d','Δόσεις'),('p',"Σε αναμονή"),("c","Ακυρώθηκε"))
     code = models.CharField(max_length=40,verbose_name="Αριθμός Παραστατικού", unique=True)
-    vendor = models.ForeignKey(Supply,verbose_name="Προμηθευτής")
+    vendor = models.ForeignKey(Supply,verbose_name="Προμηθευτής", on_delete=models.CASCADE)
     date = models.DateField(verbose_name="Ημερομηνία")
     status =models.CharField(max_length=1,choices=CHOICES,verbose_name="Σε εξέλιξη",default='p')
     notes = models.TextField(null=True,blank=True,verbose_name="")
 
-    payment_method = models.ForeignKey(PaymentMethod,null=True, verbose_name='Τρόπος Πληρωμής')
+    payment_method = models.ForeignKey(PaymentMethod,null=True, verbose_name='Τρόπος Πληρωμής', on_delete=models.SET_NULL)
     total_price_no_discount =models.DecimalField(default=0,max_digits=9,decimal_places=3,verbose_name="Αξία προ έκπτωσης")
     total_discount = models.DecimalField(default=0,max_digits=9,decimal_places=3,verbose_name="Αξία έκπτωσης")
     total_price_after_discount = models.DecimalField(default=0,max_digits=9,decimal_places=3,verbose_name="Αξία μετά την έκπτωση")
@@ -91,15 +86,15 @@ class Unit(models.Model):
 
 class OrderItem(models.Model):
     FPA_CHOICES =(("a",'13'),("b","23"),("c","24"),("d","0"))
-    order = models.ForeignKey(Order)
-    product = models.ForeignKey(Product,verbose_name='Προϊόν')
-    unit=  models.ForeignKey(Unit,verbose_name='Μονάδα Μέτρησης')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,verbose_name='Προϊόν', on_delete=models.CASCADE)
+    unit=  models.ForeignKey(Unit,verbose_name='Μονάδα Μέτρησης', on_delete=models.CASCADE)
     discount= models.IntegerField(default=0,verbose_name='Εκπτωση')
     taxes = models.CharField(max_length=1,choices=FPA_CHOICES,default="b",verbose_name='ΦΠΑ')
     qty =models.DecimalField(max_digits=8,decimal_places=2,verbose_name='Ποσότητα')
     price =models.DecimalField(max_digits=10,decimal_places=3,verbose_name='Τιμή Μονάδας')
-    color = models.ForeignKey(ColorAttribute,verbose_name='Color',null=True, blank=True )
-    size = models.ForeignKey(SizeAttribute, verbose_name='Size', null=True, blank=True)
+    color = models.ForeignKey(ColorAttribute,verbose_name='Color',null=True, blank=True, on_delete=models.SET_NULL )
+    size = models.ForeignKey(SizeAttribute, verbose_name='Size', null=True, blank=True, on_delete=models.SET_NULL)
 
 
 
@@ -165,9 +160,9 @@ class OrderItem(models.Model):
 
 
 class OrderItemColor(models.Model):
-    title = models.ForeignKey(ColorAttribute)
+    title = models.ForeignKey(ColorAttribute, on_delete=models.CASCADE)
     qty =models.DecimalField(max_digits=8,decimal_places=2,default=0, verbose_name='Ποσότητα')
-    order_item = models.ForeignKey(OrderItem)
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -179,8 +174,8 @@ class PayOrders(models.Model):
     CHOICES =(('a','Μετρητά'),('b','Πιστωτική'),('c','Μέσω Τραπέζης'))
     CHOICES2 =(('a','Εξόφληση συνολικής αξιας'),('b','Δόσεις'))
     date = models.DateField(verbose_name='Ημερομηνία')
-    title = models.ForeignKey(Order,verbose_name='Αριθμός Παραστατικου')
-    payment_method = models.ForeignKey(PaymentMethod, null=True, verbose_name='Τρόπος Πληρωμής')
+    title = models.ForeignKey(Order,verbose_name='Αριθμός Παραστατικου', on_delete=models.CASCADE)
+    payment_method = models.ForeignKey(PaymentMethod, null=True, verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
 
     #this get removed on new version
     value_portion =models.CharField(default='b',max_length=1,choices=CHOICES2)
@@ -227,8 +222,8 @@ class PayOrders(models.Model):
 class VendorDepositOrderPay(models.Model):
     # save the payments from deposit option
     title_de = models.CharField(max_length=64, blank=True, verbose_name='Σχόλια')
-    payment_method = models.ForeignKey(PaymentMethod, verbose_name='Τρόπος Πληρωμής')
-    order = models.ForeignKey(Order)
+    payment_method = models.ForeignKey(PaymentMethod, verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     value = models.DecimalField(decimal_places=3,max_digits=10, verbose_name='Ποσό πληρωμής')
     day_added = models.DateField(verbose_name='Ημερομηνία Πληρωμής')
 
@@ -238,15 +233,12 @@ class VendorDepositOrderPay(models.Model):
         return self.title_de
 
 
-
-
-
 class CheckOrder(models.Model):
     CHOICES= (('a','Σε εξέλιξη'), ('b','Εισπράκτηκε'), ('c','Ακυρώθηκε'),)
     title = models.CharField(max_length=64,blank=True, null=True, verbose_name='Σχόλια')
     value = models.DecimalField(decimal_places=2,max_digits=255, verbose_name="Ποσό")
-    debtor  =models.ForeignKey(Supply, verbose_name='Πιστωτής')
-    place = models.ForeignKey(PaymentMethod, verbose_name='Τόπος- Τράπεζα')
+    debtor = models.ForeignKey(Supply, verbose_name='Πιστωτής', on_delete=models.CASCADE)
+    place = models.ForeignKey(PaymentMethod, verbose_name='Τόπος- Τράπεζα', on_delete=models.CASCADE)
     date_expire = models.DateField(verbose_name='Ημερομηνία Λήξης')
     date_added = models.DateField(auto_now=True)
     status = models.CharField(max_length=1, choices=CHOICES, default='a', verbose_name='Κατάσταση')

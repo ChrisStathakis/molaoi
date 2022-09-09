@@ -28,7 +28,7 @@ class Fixed_costs(models.Model):
 
 class Fixed_Costs_item(models.Model):
     title = models.CharField(max_length=64,unique=True,verbose_name="Ονομασία Κατηγορίας")
-    category = models.ForeignKey(Fixed_costs)
+    category = models.ForeignKey(Fixed_costs, on_delete=models.CASCADE)
     total_pay = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Πιστωτικό Υπόλοιπο')
     total_dept = models.DecimalField(decimal_places=2, max_digits=10 ,default=0, verbose_name='Χρεωστικό Υπόλοιπο')
 
@@ -53,12 +53,12 @@ class Order_Fixed_Cost(models.Model):
     # Creates a new payment order, for the specific bill
     CHOICES=(('a','Απλήρωτη'),('b','Πληρώθηκε'))
     title = models.CharField(max_length=64,verbose_name='Αρ.Παραστατικού/Σχολιασμός')
-    category = models.ForeignKey(Fixed_Costs_item, verbose_name='Λογαριασμός')
+    category = models.ForeignKey(Fixed_Costs_item, verbose_name='Λογαριασμός', on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now,verbose_name='Ημερομηνία Λήξης')
     price = models.DecimalField(max_digits=8,decimal_places=2,verbose_name='Ποσό Πληρωμής')
     credit_balance = models.DecimalField(max_digits=8,decimal_places=2, default=0,verbose_name='Πιστωτικό Υπόλοιπο')
     active = models.CharField(max_length=1,choices=CHOICES,default='a')
-    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής')
+    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
     class Meta:
         verbose_name="Εντολές Πληρωμών"
 
@@ -78,7 +78,7 @@ class PayOrderFixedCost(models.Model):
     title = models.CharField(max_length=64,verbose_name='Αρ.Παραστατικού')
     date = models.DateField(default=timezone.now,verbose_name='Ημερομηνία Πληρωμής')
     price = models.DecimalField(max_digits=8,decimal_places=2,verbose_name='Αξία')
-    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής')
+    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -94,7 +94,7 @@ class PayOrderFixedCost(models.Model):
 
 class Occupation(models.Model):
     title = models.CharField(max_length=64,unique=True,verbose_name='Απασχόληση')
-    category = models.ForeignKey(Fixed_costs,)
+    category = models.ForeignKey(Fixed_costs, on_delete=models.CASCADE)
     notes = models.TextField(blank=True, null=True,verbose_name='Σημειώσεις')
     total_cost = models.DecimalField(max_digits=10,decimal_places=2,default=0, verbose_name='Συνολικά Έξοδα')
     remaining_cost = models.DecimalField(max_digits=10,decimal_places=2,default=0, verbose_name='Πιστωτικό Υπόλοιπο')
@@ -116,7 +116,7 @@ class Person(models.Model):
     phone = models.CharField(max_length=10,verbose_name='Τηλέφωνο', blank=True)
     phone1 = models.CharField(max_length=10, verbose_name='Κινητό', blank=True)
     date_joined = models.DateField(default=timezone.now,verbose_name='Ημερομηνία Πρόσληψης')
-    occupation = models.ForeignKey(Occupation, verbose_name='Απασχόληση')
+    occupation = models.ForeignKey(Occupation, verbose_name='Απασχόληση', on_delete=models.CASCADE)
 
     total_amount_paid = models.DecimalField(max_digits=20,decimal_places=2,default=0,verbose_name='Συνολική Πληρωμή')
     status = models.CharField(default='a', max_length=1, choices=STATUS_CHOICES)
@@ -138,7 +138,7 @@ class Person(models.Model):
 class PersonHoursCreate(models.Model):
     STATUS_CHOICES =(('a','Ενεργός'),('b','Μη Ενεργός'))
     title = models.CharField(max_length=64,unique=True, verbose_name='Περιγραφή')
-    person = models.ForeignKey(Person, verbose_name='Υπάλληλος')
+    person = models.ForeignKey(Person, verbose_name='Υπάλληλος', on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=6,decimal_places=2,default=0, verbose_name='Αξία')
     day_added =  models.DateField(auto_now=timezone.now)
     day_expire =  models.DateField(default=timezone.now, verbose_name='Πληρωμή μέχρι .....')
@@ -155,7 +155,7 @@ class PersonHoursCreate(models.Model):
 
 class PersonHoursPay(models.Model):
     title = models.CharField(max_length=64,unique=True, verbose_name='Περιγραφή')
-    person = models.ForeignKey(Person, verbose_name='Υπάλληλος')
+    person = models.ForeignKey(Person, verbose_name='Υπάλληλος', on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=6,decimal_places=2,default=0, verbose_name='Αξία')
     day_added =  models.DateField(auto_now=timezone.now)
 
@@ -180,14 +180,14 @@ class CategoryPersonPay(models.Model):
 class CreatePersonSalaryCost(models.Model):
     STATUS_CHOICES =(('a','Ενεργός'),('b','Μη Ενεργός'))
     title = models.CharField(max_length=64, verbose_name='Περιγραφή')
-    person = models.ForeignKey(Person, verbose_name='Υπάλληλος')
-    category = models.ForeignKey(CategoryPersonPay, verbose_name='Είδος Πληρωμής')
+    person = models.ForeignKey(Person, verbose_name='Υπάλληλος', on_delete=models.CASCADE)
+    category = models.ForeignKey(CategoryPersonPay, verbose_name='Είδος Πληρωμής', on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=8,decimal_places=2,default=0, verbose_name='Αξία')
     day_added =  models.DateField(auto_now=timezone.now)
     day_expire =  models.DateField(default=timezone.now, verbose_name='Πληρωμή μέχρι .....')
     status = models.CharField(default='a', max_length=1, choices=STATUS_CHOICES)
     paid_value = models.DecimalField(max_digits=8,decimal_places=2,default=0, verbose_name='Πιστωτικό Υπόλοιπο')
-    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής')
+    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name="Εντολές Πληρωμής Υπαλλήλων. " 
@@ -205,11 +205,11 @@ class CreatePersonSalaryCost(models.Model):
 
 class PayPersonSalaryCost(models.Model):
     title = models.CharField(max_length=64, verbose_name='Περιγραφή')
-    person = models.ForeignKey(Person, verbose_name='Υπάλληλος')
-    category = models.ForeignKey(CategoryPersonPay, verbose_name='Είδος Πληρωμής')
+    person = models.ForeignKey(Person, verbose_name='Υπάλληλος', on_delete=models.CASCADE)
+    category = models.ForeignKey(CategoryPersonPay, verbose_name='Είδος Πληρωμής', on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=6,decimal_places=2,default=0, verbose_name='Αξία')
     day_added =  models.DateField(auto_now=timezone.now)
-    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής')
+    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name="Αποδείξη Πληρωμής Υπαλλήλων"
@@ -226,7 +226,7 @@ class PayPersonSalaryCost(models.Model):
 class Pagia_Exoda(models.Model):
     #Create default of Αγορές, Επισκευές, Διάφορα Έξοδα
     title= models.CharField(max_length=64, unique=True, verbose_name='')
-    category = models.ForeignKey(Fixed_costs)
+    category = models.ForeignKey(Fixed_costs, on_delete=models.CASCADE)
     notes = models.TextField(blank=True, null=True,verbose_name='Σημειώσεις')
     total_cost = models.DecimalField(max_digits=10,decimal_places=2,default=0,verbose_name='Συνολικά Έξοδα')
     remaining_cost = models.DecimalField(max_digits=10,decimal_places=2,default=0,verbose_name='Πιστωτικό Υπόλοιπο')
@@ -261,13 +261,13 @@ class PersonMastoras(models.Model):
 class Pagia_Exoda_Order(models.Model):
     CHOICES=(('a','Απλήρωτη'),('b','Πληρώθηκε'))
     title = models.CharField(max_length=64,unique=True,verbose_name='Αρ.Παραστατικού')
-    category = models.ForeignKey(Pagia_Exoda, verbose_name='Λογαριασμός')
-    person = models.ForeignKey(PersonMastoras,verbose_name='Εταιρία', null=True)
+    category = models.ForeignKey(Pagia_Exoda, verbose_name='Λογαριασμός', on_delete=models.CASCADE)
+    person = models.ForeignKey(PersonMastoras,verbose_name='Εταιρία', null=True, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now,verbose_name='Ημερομηνία Λήξης')
     price = models.DecimalField(max_digits=8,decimal_places=2,verbose_name='Αξία')
     credit_balance = models.DecimalField(max_digits=8,decimal_places=2, default=0,verbose_name='Υπόλοιπο')
     active = models.CharField(max_length=1,choices=CHOICES,default='a')
-    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής')
+    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
 
 
     def __str__(self):
@@ -279,10 +279,10 @@ class Pagia_Exoda_Order(models.Model):
         
 class Pagia_Exoda_Pay_Order(models.Model):
     title = models.CharField(max_length=64,unique=True, verbose_name='Περιγραφή')
-    person = models.ForeignKey(PersonMastoras, verbose_name='Εταιρία')
+    person = models.ForeignKey(PersonMastoras, verbose_name='Εταιρία', on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=6,decimal_places=2,default=0, verbose_name='Αξία')
     day_added =  models.DateField(auto_now=timezone.now)
-    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής')
+    payment_method = models.ForeignKey(PaymentMethod, null=True,verbose_name='Τρόπος Πληρωμής', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name="Αποδείξη Πληρωμής Πάγια"

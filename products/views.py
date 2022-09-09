@@ -4,8 +4,7 @@ from inventory_manager.form import *
 from .models import Product,Supply, Category
 from .forms import*
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse
+from django.shortcuts  import reverse
 from django.contrib import messages
 from django.db.models import Q
 
@@ -22,8 +21,6 @@ def welcome_page(request):
     products = Product.objects.all()
     products_arrive = OrderItem.objects.all()[0:10]
     day = datetime.datetime.now().date()
-
-
     context={
         'title':title,
         'products':products,
@@ -110,16 +107,12 @@ def products(request):
         'site_status_name':site_status,
         'ware_status_name':ware_status,
         'btwob_name':btwob,
-
-
-
         'products':product,
         'title':title,
         'categories':categories,
         'vendors':vendors,
 
     }
-    context.update(csrf(request))
     return render(request, 'inventory/products_edit_section_NEW.html',context)
 
 @staff_member_required
@@ -174,7 +167,7 @@ def create_product(request):
         'form_category':form_category,
         'form_vendor':form_vendor,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/create_product.html', context)
 
 
@@ -192,7 +185,7 @@ def create_vendor_from_product(request):
 
         'form_vendor':form_vendor,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/create_product.html', context)
 
 
@@ -219,7 +212,7 @@ def edit_product(request, dk):
         'form':form,
         'title':title,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/create_product.html', context)
 
 
@@ -397,7 +390,7 @@ def create_vendor(request):
         'form':form,
         'form_taxes':form_Doy,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/create_vendor.html' ,context)
 
 @staff_member_required
@@ -427,7 +420,6 @@ def edit_vendor(request,dk):
         'form':form,
         'form_taxes':form_Doy,
     }
-    context.update(csrf(request))
     return render(request, 'inventory/create_vendor.html' ,context)
 
 
@@ -454,14 +446,7 @@ def vendor_check_order(request, dk):
         'form':form,
         'vendor':vendor,
     }
-    context.update(csrf(request))
     return render(request, 'inventory/vendor_add_deposit.html', context)
-
-
-
-
-
-
 
 def vendor_deposit_order(request,dk):
     #adds a new deposit to the vendor
@@ -485,7 +470,7 @@ def vendor_deposit_order(request,dk):
         'form':form,
         'vendor':vendor,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/vendor_add_deposit.html', context)
 
 
@@ -602,13 +587,9 @@ def edit_check_order(request,dk):
         'checks_done':checks_done,
 
     }
-    context.update(csrf(request))
+    
 
     return render(request, 'inventory/edit_check_orders.html', context)
-
-
-
-
 
 
 #-------------------------------Orders_section-------------------------------------------------------------------------
@@ -656,7 +637,6 @@ def create_order(request):
         'form':form,
         'last_order':last_order,
     }
-    context.update(csrf(request))
     return render(request,'inventory/new_all_NEW.html',context)
 
 def create_vendor_from_order(request):
@@ -675,8 +655,6 @@ def create_vendor_from_order(request):
         'title':title,
         'last_order':last_order,
     }
-
-    context.update(csrf(request))
     return render(request,'inventory/new_all_NEW.html',context)
 
 def create_taxes_city(request):
@@ -695,8 +673,6 @@ def create_taxes_city(request):
         'title':title,
         'last_order':last_order,
     }
-
-    context.update(csrf(request))
     return render(request,'inventory/new_all_NEW.html',context)
 
 
@@ -840,7 +816,6 @@ def add_product_to_order(request,dk,pk):
                 'products':products,
             }
 
-        context.update(csrf(request))
         return render(request,'inventory/choose_product_for_order.html', context)
 
 def create_size_to_color_from_order(request,dk,pk,ck):
@@ -860,8 +835,6 @@ def create_size_to_color_from_order(request,dk,pk,ck):
         for ele in color_name:
             new_color = ColorAttribute.objects.create(title = Color.objects.get(title =ele), qty=0,product=product)
             new_color.save()
-
-
         size_name = request.POST.getlist('size_name')
         for ele in size_name:
             new_size = SizeAttribute(title=Size.objects.get(title= ele), qty=0, color =product_color )
@@ -967,7 +940,6 @@ def add_only_color_to_order_item(request, dk, pk, ck):
             'order':order,
             'title':title
         }
-    context.update(csrf(request))
     return render(request, 'inventory/add_color_and_size_to_order_item.html', context)
 
 def add_size_to_order_item(request,dk,pk,ck):
@@ -1073,7 +1045,6 @@ def add_color_and_size_to_order_item(request,dk,pk,ck,sk):
             'title':title,
             'order':order,
         }
-    context.update(csrf(request))
     return render(request, 'inventory/add_color_and_size_to_order_item.html', context)
 
 def edit_product_from_order(request,dk,pk):
@@ -1089,8 +1060,6 @@ def edit_product_from_order(request,dk,pk):
             Q(description__icontains=query)|
             Q(title__icontains=query)
         ).distinct()
-
-
 
     if request.POST:
         form =OrderItemForm(request.POST,instance=order_item)
@@ -1122,7 +1091,7 @@ def edit_product_from_order(request,dk,pk):
         'order_item':order_item,
 
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/edit_order_id_New.html',context)
 
 def create_product_from_order_page(request,dk):
@@ -1163,7 +1132,7 @@ def create_product_from_order_page(request,dk):
         'form_category':form_category,
         'form_vendor':form_vendor,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/create_product.html', context)
 
 
@@ -1183,10 +1152,6 @@ def choose_color_to_product_from_order(request,ok,pk):
             new_color = ColorAttribute.objects.create(title = Color.objects.get(title =ele), qty=0,product=product)
             new_color.save()
         return HttpResponseRedirect('/αποθήκη/τιμολόγια/προσθήκη-προιόντος/%s/color/%s/' %(ok,pk))
-
-
-
-
     context = {
             'product':product,
             'colors':colors,
@@ -1253,8 +1218,6 @@ def create_category_from_order(request,dk):
         'form':form,
         'last_order':last_order,
     }
-    context.update(csrf(request))
-
     return render(request, 'inventory/done_order_add_product_New.html', context)
 
 def done_order_delete_id(request,dk):
@@ -1288,7 +1251,6 @@ def order_edit(request,dk):
         'products':products,
         'order_id':order,
     }
-    context.update(csrf(request))
     return render(request,'inventory/done_order_edit_id.html',context)
 
 def delete_order_item(request,dk):
@@ -1298,8 +1260,6 @@ def delete_order_item(request,dk):
     order_item.delete_order_item(foo=dk)
     order_item.delete()
     return HttpResponseRedirect("/αποθήκη/τιμολόγια/επεξεργασία/%s/" %(order.id))
-
-
 
 
 def tools(request):
@@ -1354,7 +1314,7 @@ def tools(request):
         'payment_method':payment_method,
         'payment_group':payment_group,
     }
-    context.update(csrf(request))
+    
     return render(request,'inventory/tools.html',context)
 
 def activate_or_deactive_color(request, dk):
@@ -1419,7 +1379,7 @@ def edit_payment_group(request, dk):
     context ={
         'form':form,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/tools_edit_color.html', context)
 
 def edit_payment(request, dk):
@@ -1435,7 +1395,7 @@ def edit_payment(request, dk):
     context ={
         'form':form,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/tools_edit_color.html', context)
 
 
@@ -1466,7 +1426,7 @@ def tools_change_order(request):
         'title':title,
         'form':form,
     }
-    context.update(csrf(request))
+  
     return render(request,'inventory/tools_order.html', context)
 
 
@@ -1563,7 +1523,7 @@ def tools_grab_qty(request,dk,pk):
         'order_item':order_items,
         'order':order,
     }
-    context.update(csrf(request))
+   
     return render(request, 'inventory/tools_grab_qty.html',context)
 
 
@@ -1587,7 +1547,7 @@ def tools_grab_color(request, dk, pk):
         'order_item':order_items,
         'order':order,
     }
-    context.update(csrf(request))
+
     return render(request, 'inventory/tools_grab_qty.html',context)
 
 
@@ -1612,15 +1572,8 @@ def tools_grab_size(request, dk, pk):
         'order_item':order_items,
         'order':order,
     }
-    context.update(csrf(request))
+  
     return render(request, 'inventory/tools_grab_qty.html',context)
-
-
-
-
-
-
-
 
 
 
@@ -1657,7 +1610,7 @@ def new_category(request):
         'form_v':form_v,
 
         }
-    context.update(csrf(request))
+    
     return render(request,'inventory/new_category.html',context)
 '''
 
@@ -1692,7 +1645,7 @@ def done_order_edit_id(request,dk):
         'products':products,
         'order_id':order,
     }
-    context.update(csrf(request))
+    
     return render(request,'inventory/done_order_edit_id.html',context)
 
 def done_order_product_id(request,dk):
@@ -1716,7 +1669,7 @@ def done_order_product_id(request,dk):
         'order_item':order_item
 
     }
-    context.update(csrf(request))
+    
     return render(request,'inventory/done_order_edit_product_id.html',context)
 
 
@@ -1736,15 +1689,8 @@ def done_order_add_product(request,dk):
         'form_order':form,
         'order':order,
     }
-    context.update(csrf(request))
+
     return render(request,'inventory/edit_order_add.html',context)
-
-
-
-
-
-
-
 
 
 
@@ -1807,7 +1753,7 @@ def edit_product_id(request,dk):
         'form':form,
         'product': product,
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/edit_product_id.html',context)
 
 
@@ -1824,8 +1770,6 @@ def edit_product_vendor_id(request,dk):
         'vendor':vendor
     }
     return render(request,'inventory/products_edit_choose_vendor.html',context)
-
-
 
 
 
@@ -1847,8 +1791,9 @@ def edit_order(request, dk):
         'products':products,
         'order_id':order,
     }
-    context.update(csrf(request))
+    
     return render(request,'inventory/edit_order.html',context)
+
 
 def edit_order_id(request,dk):
     order_item= OrderItem.objects.get(id=dk)
@@ -1871,7 +1816,7 @@ def edit_order_id(request,dk):
         'order_item':order_item
 
     }
-    context.update(csrf(request))
+    
     return render(request, 'inventory/edit_order_id_New.html',context)
 
 
@@ -1905,7 +1850,7 @@ def add_order_id(request,dk):
         'form_order':form,
         'order':order,
     }
-    context.update(csrf(request))
+    
     return render(request,'inventory/edit_order_add.html',context)
 
 
@@ -1948,9 +1893,8 @@ def edit_vendor_id(request, dk):
         'form':form,
         'vendors':vendors
     }
-    context.update(csrf(request))
+   
     return render(request,'inventory/vendor_edit_id.html',context)
-
 
 
 
@@ -2184,7 +2128,7 @@ def pay_orders_repayment(request,dk):
         'form':form,
         'orders':orders,
     }
-    context.update(csrf(request))
+    
     return render(request,'inventory/pay_section/pay_orders_repayment.html',context)
 
 def pay_orders_doseis(request):
@@ -2216,7 +2160,7 @@ def pay_order_doseis_id(request,dk):
         'orders':orders,
         'pay_orders':pay_orders,
     }
-    context.update(csrf(request))
+    
     return render(request,'inventory/pay_section/pay_orders_doseis_id.html',context)
 
 

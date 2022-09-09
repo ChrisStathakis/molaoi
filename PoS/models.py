@@ -1,3 +1,4 @@
+from turtle import onclick
 from django.db import models
 from recipes.models import *
 from django.utils import timezone
@@ -98,7 +99,7 @@ class MonthlyIncomeGreG(models.Model):
     money_outcome = models.DecimalField(default=0, max_digits=8,decimal_places=2)
     order_number = models.IntegerField(default=0)
     status = models.CharField(max_length=1, default='a',choices=CHOICES)
-    year = models.ForeignKey(YearlyIncomeGreg,null=True)
+    year = models.ForeignKey(YearlyIncomeGreg,null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -148,8 +149,8 @@ class DailyIncomeGreG(models.Model):
     money_outcome = models.DecimalField(default=0, max_digits=8,decimal_places=2)
     order_number = models.IntegerField(default=0)
     status = models.CharField(max_length=1, default='a',choices=CHOICES)
-    month = models.ForeignKey(MonthlyIncomeGreG,null=True)
-    year = models.ForeignKey(YearlyIncomeGreg,null=True)
+    month = models.ForeignKey(MonthlyIncomeGreG,null=True, on_delete=models.CASCADE)
+    year = models.ForeignKey(YearlyIncomeGreg,null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -212,7 +213,7 @@ class RestoOrder(models.Model):
     STATUS_CHOICES =(('a','Σε εξέλιξη'),('b','Αποπληρώθηκε'),('c','Ακύρωση'))
     title = models.CharField(max_length=50,default=timezone.now)
     notes = models.TextField(null=True,blank=True)
-    table = models.ForeignKey(Table,verbose_name='Τραπέζι')
+    table = models.ForeignKey(Table,verbose_name='Τραπέζι', on_delete=models.CASCADE)
     day_added = models.DateTimeField(default=timezone.now)
     discount = models.IntegerField(default=0, verbose_name='Έκπτωση',)
 
@@ -224,9 +225,10 @@ class RestoOrder(models.Model):
 
 
 
-    year = models.ForeignKey(YearlyIncomeGreg,null=True,blank=True)
-    month =models.ForeignKey(MonthlyIncomeGreG,null=True, blank=True)
-    day = models.ForeignKey(DailyIncomeGreG,null=True,blank=True)
+    year = models.ForeignKey(YearlyIncomeGreg, null=True, blank=True, on_delete=models.CASCADE)
+    month =models.ForeignKey(MonthlyIncomeGreG,null=True, blank=True, on_delete=models.CASCADE)
+    day = models.ForeignKey(DailyIncomeGreG,null=True,blank=True, on_delete=models.CASCADE)
+
     class Meta:
         verbose_name="Παραγγελία Εστιατορίου"
         
@@ -294,8 +296,8 @@ class RestoOrder(models.Model):
 
 
 class RestoOrderItem(models.Model):
-    title = models.ForeignKey(Recipe)
-    order = models.ForeignKey(RestoOrder)
+    title = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    order = models.ForeignKey(RestoOrder, on_delete=models.CASCADE)
     cost =  models.DecimalField(max_digits=6,decimal_places=2,default=0)
     price = models.DecimalField(max_digits=6,decimal_places=2,default=0)
     qty= models.DecimalField(max_digits=3,decimal_places=1,default=1, verbose_name='Ποσότητα')
@@ -335,14 +337,9 @@ class Lianiki_Order(models.Model):
     value = models.DecimalField(max_digits=6,decimal_places=2,default=0,verbose_name='Αξία Παραγγελίας')
     total_cost  = models.DecimalField(max_digits=6,decimal_places=2,default=0,verbose_name='Συνολικό Κόστος Παραγγελίας')
     paid_value = models.DecimalField(max_digits=6,decimal_places=2,default=0,verbose_name='Αποπληρωμένο Πόσο')
-
-
-
-
-
-    year = models.ForeignKey(YearlyIncomeGreg,null=True,blank=True)
-    month =models.ForeignKey(MonthlyIncomeGreG,null=True, blank=True)
-    day = models.ForeignKey(DailyIncomeGreG,null=True,blank=True)
+    year = models.ForeignKey(YearlyIncomeGreg,null=True,blank=True, on_delete=models.CASCADE)
+    month =models.ForeignKey(MonthlyIncomeGreG,null=True, blank=True, on_delete=models.CASCADE)
+    day = models.ForeignKey(DailyIncomeGreG,null=True,blank=True, on_delete=models.CASCADE)
 
     def remaining_value(self):
         return str(self.value - self.paid_value)
@@ -371,16 +368,15 @@ class Lianiki_Order(models.Model):
         order_lianiki.save()
 
 class LianikiOrderItem(models.Model):
-
-    title = models.ForeignKey(Product)
-    order = models.ForeignKey(Lianiki_Order)
+    title = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(Lianiki_Order, on_delete=models.CASCADE)
     cost =  models.DecimalField(max_digits=6,decimal_places=2,default=0)
     price = models.DecimalField(max_digits=6,decimal_places=2,default=0,verbose_name='Τιμή Μονάδας')
     qty= models.DecimalField(max_digits=3,decimal_places=1,default=1, verbose_name='Ποσότητα')
 
     #if needed
-    color = models.ForeignKey(ColorAttribute, blank=True, null=True)
-    size = models.ForeignKey(SizeAttribute, blank=True ,null=True)
+    color = models.ForeignKey(ColorAttribute, blank=True, null=True, on_delete=models.SET_NULL)
+    size = models.ForeignKey(SizeAttribute, blank=True ,null=True, on_delete=models.SET_NULL)
 
 
 
@@ -483,8 +479,8 @@ class RetailReturnOrder(models.Model):
 
 
 class RetailReturnItem(models.Model):
-    title = models.ForeignKey(Product)
-    order = models.ForeignKey(RetailReturnOrder)
+    title = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(RetailReturnOrder, on_delete=models.CASCADE)
     cost  =  models.DecimalField(max_digits=6,decimal_places=2,default=0)
     price = models.DecimalField(max_digits=6,decimal_places=2,default=0,verbose_name='Τιμή Μονάδας')
     qty   = models.DecimalField(max_digits=3,decimal_places=1,default=1, verbose_name='Ποσότητα')
