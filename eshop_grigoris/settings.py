@@ -25,7 +25,7 @@ SECRET_KEY = '3rol1y3ig7=nl_l2)hs(bd805e0ryon*k(u-1y@b%+-tr@nstx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['zefarak.pythonanywhere.com', ]
 
 
 # Application definition
