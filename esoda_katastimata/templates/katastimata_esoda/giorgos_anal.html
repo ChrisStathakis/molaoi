@@ -133,44 +133,50 @@ var myChart = new Chart(ctx, {
   <table class='ui selectable table'>
     <thead>
       <tr>
-      <th></th>
-      {% for month in mo %}
-      <th>{{ month }}</th>
-    {% endfor %}
-    </tr>
+          <th></th>
+          {% for month in mo %}
+              <th>{{ month }}</th>
+          {% endfor %}
+        <th>ΣΥΝΟΛΟ</th>
+      </tr>
+
   </thead>
     <tbody>
       <tr>
         <td class="positive">Έσοδα</td>
         {% for ele in incomes_order %}
-          <td class="positive">{{ ele.1 }} €
+          <td class="positive">{{ ele.1|floatformat:2 }} €
         {% endfor %}
+        <td class="positive">{{ total_incomes|floatformat:2 }} €</td>
       </tr>
       <tr>
         <td class="negative">Έσοδα Προηγούμενης Χρονιάς</td>
         {% for ele in incomes_order_last %}
-          <td class="negative">{{ ele.1 }} €
+          <td class="negative">{{ ele.1|floatformat:2 }} €
         {% endfor %}
+        <td class="negative">{{ last_incomes|floatformat:2 }} €</td>
       </tr>
       <tr>
         <td>Επιταγες</td>
         {% for ele in outcomes_order %}
-          <td class="warning">{{ ele.1 }} €
+          <td class="warning">{{ ele.1|floatformat:2 }} €
         {% endfor %}
+       <td class="negative">{{ all_checks_total|floatformat:2 }} €</td>
       </tr>
       <tr>
         <td>Μισθοδοσία</td>
         {% for ele in payroll_order %}
-          <td class="warning">{{ ele.1 }} €
+          <td class="warning">{{ ele.1|floatformat:2 }} €
         {% endfor %}
       </tr>
       <tr>
         <td>Λογαριασμοί</td>
         {% for ele in bills_order %}
-          <td class="warning">{{ ele.1 }} €
+          <td class="warning">{{ ele.1|floatformat:2 }} €
         {% endfor %}
       </tr>
 
     </tbody>
+  </table>
 </div>
 {% endblock %}

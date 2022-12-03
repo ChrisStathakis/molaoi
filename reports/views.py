@@ -21,12 +21,14 @@ def homepage(request):
 
 from django.db.models import Sum
 
+
 def get_data(date_start, date_end):
     all_checks = CheckOrder.objects.filter(date_expire__range=[date_start, date_end])
     bills = Order_Fixed_Cost.objects.filter(date__range=[date_start, date_end], active='b')
     payroll = CreatePersonSalaryCost.objects.filter(day_expire__range=[date_start, date_end])
     incomes = AddEsoda.objects.filter(title__range=[date_start, date_end])
     return [all_checks, bills, payroll, incomes]
+
 
 def get_data_per_month(incomes, all_checks, bills, payroll, month):
     data = incomes.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] if incomes.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] else 0
@@ -35,16 +37,20 @@ def get_data_per_month(incomes, all_checks, bills, payroll, month):
     payroll_checks = payroll.filter(day_expire__month = month.month).aggregate(Sum('value'))['value__sum'] if payroll.filter(day_expire__month = month.month).aggregate(Sum('value'))['value__sum'] else 0
     return [data, data_checks, bills_checks, payroll_checks]
 
+
 def giorgos_reports(request):
     date_now = datetime.datetime.now()
     date_end = datetime.datetime(datetime.datetime.now().year, 12, 31)
     date_start = datetime.datetime(datetime.datetime.now().year, 1, 1)
     all_checks, bills, payroll, incomes = get_data(date_start=date_start, date_end=date_end)
 
+    total_incomes = incomes.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
+    all_checks_total = all_checks.aggregate(Sum('value'))['value__sum']
+
     date_start_last = date_start - relativedelta(years=1)
     date_end_last = date_end - relativedelta(years=1)
     all_checks_last, bills_last, payroll_last, incomes_last = get_data(date_start=date_start_last, date_end=date_end_last)
-
+    last_incomes = incomes_last.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
     incomes_per_month = {}
     outcomes_per_month = {}
     bills_per_month = {}
@@ -145,6 +151,7 @@ def warehouse(request):
         'avg_cat':avg_cat,
         'avg_vendor':avg_vendor,
        'avg_order':avg_order,
+
 
     }
     return render(request,'reports/warehouse.html', context)
