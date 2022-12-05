@@ -30,8 +30,14 @@ def get_data(date_start, date_end):
     return [all_checks, bills, payroll, incomes]
 
 
+def get_only_incomes_per_month(data, month):
+    df = data.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] if \
+        data.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] else 0
+    return df
+
 def get_data_per_month(incomes, all_checks, bills, payroll, month):
-    data = incomes.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] if incomes.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] else 0
+    data = incomes.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] if \
+        incomes.filter(title__month=month.month).aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] else 0
     data_checks = all_checks.filter(date_expire__month=month.month).aggregate(Sum('value'))['value__sum']
     bills_checks = bills.filter(date__month=month.month).aggregate(Sum('price'))['price__sum']
     payroll_checks = payroll.filter(day_expire__month = month.month).aggregate(Sum('value'))['value__sum'] if payroll.filter(day_expire__month = month.month).aggregate(Sum('value'))['value__sum'] else 0
@@ -46,16 +52,51 @@ def giorgos_reports(request):
 
     total_incomes = incomes.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
     all_checks_total = all_checks.aggregate(Sum('value'))['value__sum']
-
     date_start_last = date_start - relativedelta(years=1)
     date_end_last = date_end - relativedelta(years=1)
     all_checks_last, bills_last, payroll_last, incomes_last = get_data(date_start=date_start_last, date_end=date_end_last)
-    last_incomes = incomes_last.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
+
+
+    # 2 years data
+    two_years_ago_start = date_start - relativedelta(years=2)
+    two_years_ago_end = date_end - relativedelta(years=2)
+    print('two y', two_years_ago_start, two_years_ago_end, date_start_last)
+    not_needed_1, not_needed_2, not_needed_3, two_years_ago_incomes = get_data(date_start=two_years_ago_start,
+                                                                               date_end=two_years_ago_end)
+
+    # 3 years data
+    three_years_ago_start = date_start - relativedelta(years=3)
+    three_years_ago_end = date_end - relativedelta(years=3)
+    not_needed_1, not_needed_2, not_needed_3, three_years_ago_incomes = get_data(date_start=three_years_ago_start,
+                                                                               date_end=three_years_ago_end)
+
+    # 4 years data
+    four_years_ago_start = date_start - relativedelta(years=4)
+    four_years_ago_end = date_end - relativedelta(years=4)
+    not_needed_1, not_needed_2, not_needed_3, four_years_ago_incomes = get_data(date_start=four_years_ago_start,
+                                                                               date_end=four_years_ago_end)
+    # 5 years data
+    five_years_ago_start = date_start - relativedelta(years=5)
+    five_years_ago_end = date_end - relativedelta(years=5)
+    not_needed_1, not_needed_2, not_needed_3, five_years_ago_incomes = get_data(date_start=five_years_ago_start,
+                                                                               date_end=five_years_ago_end)
+
+    last_incomes = incomes_last.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum'] if incomes_last.exists() else 0
+    two_years_incomes_total = two_years_ago_incomes.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
+    three_years_ago_incomes_sum = three_years_ago_incomes.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
+    four_years_ago_incomes_sum = four_years_ago_incomes.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
+    five_years_ago_incomes_sum = five_years_ago_incomes.aggregate(Sum('sinolo_olon'))['sinolo_olon__sum']
+
     incomes_per_month = {}
     outcomes_per_month = {}
     bills_per_month = {}
     payroll_per_month = {}
     incomes_per_month_last = {}
+    incomes_per_month_two_last = {}
+    incomes_per_month_three_last = {}
+    incomes_per_month_four_last = {}
+    incomes_per_month_five_last = {}
+
     outcomes_per_month_last = {}
     bills_per_month_last = {}
     payroll_per_month_last = {}
@@ -63,7 +104,7 @@ def giorgos_reports(request):
     count = 0
     while count < months+1:
         month = date_end - relativedelta(month=count+1)
-        print(month.strftime("%B"))
+
         data, data_checks, bills_checks, payroll_checks = get_data_per_month(incomes=incomes,
                                                                              all_checks=all_checks,
                                                                              bills=bills,
@@ -74,19 +115,37 @@ def giorgos_reports(request):
                                                                              bills=bills_last,
                                                                              payroll=payroll_last,
                                                                              month=month)
-        print(month.month, data, data_last)
+
+        data_two_years = get_only_incomes_per_month(two_years_ago_incomes, month)
+        data_three_years = get_only_incomes_per_month(three_years_ago_incomes, month)
+        data_four_years = get_only_incomes_per_month(four_years_ago_incomes, month)
+        data_five_years = get_only_incomes_per_month(five_years_ago_incomes, month)
+
         payroll_per_month[month.strftime("%B")] = payroll_checks
         bills_per_month[month.strftime("%B")] = bills_checks
         incomes_per_month[month.strftime("%B")] = data
         outcomes_per_month[month.strftime("%B")] = data_checks
         payroll_per_month_last[month.strftime("%B")] = payroll_checks_last
         bills_per_month_last[month.strftime("%B")] = bills_checks_last
+
         incomes_per_month_last[month.strftime("%B")] = data_last
+        incomes_per_month_two_last[month.strftime("%B")] = data_two_years
+        incomes_per_month_three_last[month.strftime("%B")] = data_three_years
+        incomes_per_month_four_last[month.strftime("%B")] = data_four_years
+        incomes_per_month_five_last[month.strftime("%B")] = data_five_years
+
+        
         outcomes_per_month_last[month.strftime("%B")] = data_checks_last
         count +=1
     mo = MONTHS
+
     incomes_order = []
     incomes_order_last = []
+    incomes_order_two_years = []
+    incomes_order_three_years = []
+    incomes_order_four_years = []
+    incomes_order_five_years = []
+
     outcomes_order = []
     bills_order =[]
     payroll_order =[]
@@ -100,6 +159,28 @@ def giorgos_reports(request):
             incomes_order_last.append((month, incomes_per_month_last[month]))
         except:
             incomes_order_last.append((month, 0))
+
+
+        try:
+            incomes_order_two_years.append((month, incomes_per_month_two_last[month]))
+        except:
+            incomes_order_two_years.append((month, 0))
+
+        try:
+            incomes_order_three_years.append((month, incomes_per_month_three_last[month]))
+        except:
+            incomes_order_three_years.append((month, 0))
+
+        try:
+            incomes_order_four_years.append((month, incomes_per_month_four_last[month]))
+        except:
+            incomes_order_four_years.append((month, 0))
+
+        try:
+            incomes_order_five_years.append((month, incomes_per_month_five_last[month]))
+        except:
+            incomes_order_five_years.append((month, 0))
+
         try:
             if outcomes_per_month[month] == None:
                 outcomes_per_month = 0
@@ -134,13 +215,10 @@ def warehouse(request):
     products = Product.objects.all()
     categories = Category.objects.all()
     vendors = Supply.objects.all()
-    orders  =Order.objects.all()
+    orders = Order.objects.all()
     avg_cat = show_avg_per_cat()
     avg_vendor = show_avg_per_vendor()
     avg_order = show_avg_per_order()
-
-
-
 
     context = {
         'title':title,

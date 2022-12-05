@@ -157,6 +157,34 @@ var myChart = new Chart(ctx, {
         <td class="negative">{{ last_incomes|floatformat:2 }} €</td>
       </tr>
       <tr>
+        <td class="warning">2 χρονια πριν</td>
+        {% for ele in incomes_order_two_years %}
+          <td class="warning">{{ ele.1|floatformat:2 }} €
+        {% endfor %}
+        <td class="warning">{{ two_years_incomes_total|floatformat:2 }} €</td>
+      </tr>
+      <tr>
+        <td class="negative">3 χρονια πριν</td>
+        {% for ele in incomes_order_three_years %}
+          <td class="negative">{{ ele.1|floatformat:2 }} €
+        {% endfor %}
+        <td class="negative">{{ three_years_ago_incomes_sum|floatformat:2 }} €</td>
+      </tr>
+      <tr>
+        <td class="warning">4 χρονια πριν</td>
+        {% for ele in incomes_order_four_years %}
+          <td class="warning">{{ ele.1|floatformat:2 }} €
+        {% endfor %}
+        <td class="warning">{{ four_years_ago_incomes_sum|floatformat:2 }} €</td>
+      </tr>
+      <tr>
+        <td class="negative">5 χρονια πριν</td>
+        {% for ele in incomes_order_five_years %}
+          <td class="negative">{{ ele.1|floatformat:2 }} €
+        {% endfor %}
+        <td class="negative">{{ five_years_ago_incomes_sum|floatformat:2 }} €</td>
+      </tr>
+      <tr>
         <td>Επιταγες</td>
         {% for ele in outcomes_order %}
           <td class="warning">{{ ele.1|floatformat:2 }} €
